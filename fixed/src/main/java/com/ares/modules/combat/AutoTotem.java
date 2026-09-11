@@ -38,6 +38,10 @@ public final class AutoTotem extends Module {
     @EventHandler
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
+        // Offhand ma pierwszenstwo - bez tego oba moduly klikaly sloty na zmiane
+        Offhand offhandModule = com.ares.Ares.get().modules().get(Offhand.class);
+        if (offhandModule != null && offhandModule.isEnabled()) return;
+
         timer.increment();
         if (!timer.passed(delay.get())) return;
 

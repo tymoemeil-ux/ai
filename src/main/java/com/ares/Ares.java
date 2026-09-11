@@ -149,11 +149,13 @@ public final class Ares {
         friends.init(configDirectory);
         macros.init(configDirectory);
         config.init(configDirectory);
+        boolean firstRun = !java.nio.file.Files.exists(configDirectory.resolve("ares.json"));
         try {
             config.load();
         } catch (Throwable t) {
             System.err.println("[" + NAME + "] Nie udalo sie wczytac configu, startuje z domyslnymi: " + t);
         }
+        if (firstRun) applyDefaultPreset();
 
         eventBus.register(this);
         eventBus.register(popCounter);
@@ -251,6 +253,24 @@ public final class Ares {
         modules.register(new FriendsModule());
         modules.register(new MacrosModule());
         modules.register(new ColorsModule());
+    }
+
+    /**
+     * Pierwsze uruchomienie: od razu wlaczamy zestaw CrystalPvP,
+     * zeby nie trzeba bylo recznie klikac kazdego modulu.
+     */
+    private void applyDefaultPreset() {
+        enable(com.ares.modules.combat.AutoTotem.class);
+        enable(com.ares.modules.combat.Offhand.class);
+        enable(com.ares.modules.combat.Surround.class);
+        enable(com.ares.modules.combat.AutoCrystal.class);
+        enable(com.ares.modules.combat.KillAura.class);
+        enable(com.ares.modules.combat.AutoArmor.class);
+    }
+
+    private void enable(Class<? extends Module> type) {
+        Module module = modules.get(type);
+        if (module != null) module.setEnabled(true);
     }
 
     /**

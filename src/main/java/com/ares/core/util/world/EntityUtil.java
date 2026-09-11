@@ -1,5 +1,6 @@
 package com.ares.core.util.world;
 
+import com.ares.Ares;
 import com.ares.core.util.Wrapper;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,24 +16,57 @@ public final class EntityUtil {
     private EntityUtil() {
     }
 
+    private static int cachedTick = Integer.MIN_VALUE;
+    private static List<Entity> cachedAll = new ArrayList<>();
+    private static List<PlayerEntity> cachedPlayers = new ArrayList<>();
+    private static List<EndCrystalEntity> cachedCrystals = new ArrayList<>();
+
+    /**
+     * Skanujemy swiat TYLKO RAZ NA TICK i trzymamy wynik w cache.
+     * Wczesniej kazdy modul (ESP, Radar, Target, Crystal, Surround...) robil wlasny
+     * pelny przejazd po wszystkich bytach - po kilkanascie razy na tick = lagi.
+     */
+    private static void refresh() {
+        int tick = Ares.get().ticks();
+        if (tick == cachedTick) return;
+        cachedTick = tick;
+
+        List<Entity> all = new ArrayList<>();
+        List<PlayerEntity> players = new ArrayList<>();
+        List<EndCrystalEntity> crystals = new ArrayList<>();
+        if (Wrapper.world() != null) {
+            for (Entity entity : Wrapper.world().getEntities()) {
+                if (entity == null) continue;
+                all.add(entity);
+                if (entity instanceof EndCrystalEntity crystal) crystals.add(crystal);
+                else if (entity instanceof PlayerEntity player) players.add(player);
+            }
+        }
+        cachedAll = all;
+        cachedPlayers = players;
+        cachedCrystals = crystals;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T extends Entity> List<T> getEntities(Class<T> type, double range) {
+        refresh();
         List<T> result = new ArrayList<>();
-        if (Wrapper.world() == null) return result;
-        for (Entity entity : Wrapper.world().getEntities()) {
-            if (entity == null || !type.isInstance(entity)) continue;
+        net.minecraft.client.network.ClientPlayerEntity self = Wrapper.player();
+        for (Entity entity : cachedAll) {
+            if (!type.isInstance(entity)) continue;
+            if (range > 0 && self != null && entity.squaredDistanceTo(self) > range * range) continue;
             result.add((T) entity);
         }
         return result;
     }
 
     public static List<PlayerEntity> players(double range) {
+        refresh();
         List<PlayerEntity> result = new ArrayList<>();
-        if (Wrapper.world() == null) return result;
-        for (Entity entity : Wrapper.world().getEntities()) {
-            if (entity instanceof PlayerEntity player) {
-                result.add(player);
-            }
+        net.minecraft.client.network.ClientPlayerEntity self = Wrapper.player();
+        for (PlayerEntity player : cachedPlayers) {
+            if (range > 0 && self != null && player.squaredDistanceTo(self) > range * range) continue;
+            result.add(player);
         }
         return result;
     }
@@ -48,12 +82,8 @@ public final class EntityUtil {
     }
 
     public static List<EndCrystalEntity> crystals() {
-        List<EndCrystalEntity> result = new ArrayList<>();
-        if (Wrapper.world() == null) return result;
-        for (Entity entity : Wrapper.world().getEntities()) {
-            if (entity instanceof EndCrystalEntity crystal) result.add(crystal);
-        }
-        return result;
+        refresh();
+        return new ArrayList<>(cachedCrystals);
     }
 
     public static List<EndCrystalEntity> crystalsInRange(Vec3dSupplier pos, double range) {

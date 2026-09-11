@@ -12,6 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.RaycastContext;
+import com.ares.core.util.world.EntityUtil;
 import net.minecraft.world.World;
 
 /** Pomocnicze operacje na blokach: podstawa pod krysztal, raytracing, stawianie. */
@@ -57,11 +58,11 @@ public final class BlockUtil {
 
     /** Czy krysztal juz tam stoi (po encjach). */
     public static boolean isCrystalAt(BlockPos pos) {
-        Vec3d center = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-        for (net.minecraft.entity.Entity entity : Wrapper.world().getEntities()) {
-            if (entity instanceof net.minecraft.entity.decoration.EndCrystalEntity crystal) {
-                if (crystal.getPos().squaredDistanceTo(center) < 1.5) return true;
-            }
+        if (Wrapper.world() == null) return false;
+        Vec3d center = new Vec3d(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
+        // EntityUtil ma cache - bez tego kazde wywolanie skanowalo caly swiat
+        for (net.minecraft.entity.decoration.EndCrystalEntity crystal : EntityUtil.crystals()) {
+            if (crystal.getPos().squaredDistanceTo(center) < 2.25) return true;
         }
         return false;
     }
@@ -80,7 +81,7 @@ public final class BlockUtil {
 
     public static boolean canSee(Vec3d from, Vec3d to) {
         World world = Wrapper.world();
-        if (world == null) return false;
+        if (world == null || Wrapper.player() == null) return false;
         BlockHitResult result = world.raycast(new RaycastContext(from, to,
                 RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
                 Wrapper.player()));

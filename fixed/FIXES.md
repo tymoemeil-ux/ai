@@ -184,3 +184,30 @@ Caused by: java.lang.StackOverflowError
 
 46. Osobno (runda 7): `Illegal option value ... options.fov` - 10 316 linii w jednym logu
     (Zoom/CustomFOV pisaly FOV poza zakres 30-110). Juz naprawione mixinem GameRenderer.
+
+## Naprawione — runda 9 (lagi + moduly ktore "nie dzialaly" + preset na start)
+
+47. **LAGI - skanowanie swiata**: kazdy modul (ESP, Radar, Target, Crystal, Surround...)
+    przejezdzal po WSZYSTKICH bytach swiata osobno, po kilkanascie razy na tick.
+    `EntityUtil` ma teraz cache odswiezany RAZ NA TICK - wszystkie moduly korzystaja z jednego skanu.
+
+48. **LAGI - kalkulacja obrazen**: `DamageUtil.exposure()` robil do **729 raycastow** na jedno
+    obliczenie obrazen (AutoCrystal liczyl to dla ~22 pozycji x cel i x gracz = dziesiatki
+    tysiecy raycastow na tick). Teraz max 64 probki + cache wynikow w ramach ticka.
+
+49. **LAGI - `BlockUtil.isCrystalAt`**: skanowal caly swiat dla kazdej pozycji krysztalu.
+    Korzysta z cache `EntityUtil`.
+
+50. **KillAura nie atakowal**: opcja "Only Weapon" byla domyslnie wlaczona, wiec modul stal
+    bezczynnie, gdy w rece nie bylo miecza/topora. Domyslnie wylaczona - atakuje zawsze.
+
+51. **AutoTotem vs Offhand**: oba moduly klikaly sloty na zmiane i sie gryzly.
+    AutoTotem teraz ustepuje, gdy Offhand jest wlaczony.
+
+52. **Surround**: opcja "Center" byla martwa (nieuzwana w kodzie) - dodane delikatne
+    centrowanie predkoscia, dzieki czemu obstawianie trafia w blok w ktorym stoimy.
+
+53. **Preset CrystalPvP na start**: przy PIERWSZYM uruchomieniu (brak `config/ares/ares.json`)
+    automatycznie wlaczaja sie: Auto Totem, Offhand, Surround, Auto Crystal, KillAura, Auto Armor.
+
+54. `BlockUtil.canSee` nie rzuca juz NPE gdy nie ma gracza.

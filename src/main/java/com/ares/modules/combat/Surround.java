@@ -39,6 +39,16 @@ public final class Surround extends Module {
         super("Surround", "Obstawia gracza blokami odpornymi na wybuchy", ModuleCategory.COMBAT);
     }
 
+    /** Delikatne centrowanie na srodku bloku (predkoscia, bez teleportow). */
+    private void centerPlayer(BlockPos feet) {
+        net.minecraft.client.network.ClientPlayerEntity player = Wrapper.player();
+        if (player == null || !player.isOnGround()) return;
+        double dx = (feet.getX() + 0.5) - player.getX();
+        double dz = (feet.getZ() + 0.5) - player.getZ();
+        if (Math.abs(dx) < 0.05 && Math.abs(dz) < 0.05) return;
+        player.setVelocity(dx * 0.3, player.getVelocity().getY(), dz * 0.3);
+    }
+
     @EventHandler
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
@@ -61,6 +71,7 @@ public final class Surround extends Module {
         if (!timer.passed(delay.get())) return;
 
         BlockPos feet = Wrapper.player().getBlockPos();
+        if (center.get()) centerPlayer(feet);
         List<BlockPos> positions = HoleUtil.surroundPositions(feet);
 
         int previous = Wrapper.player().getInventory().getSelectedSlot();

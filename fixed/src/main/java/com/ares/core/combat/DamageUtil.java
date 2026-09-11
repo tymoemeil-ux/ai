@@ -23,6 +23,10 @@ public final class DamageUtil {
     }
 
     private static final float CRYSTAL_POWER = 6.0f;
+    /** Maksymalnie 4 probki na os (vanilla liczy nawet 9 -> do 729 raycastow na wybuch!). */
+    private static final int MAX_SAMPLES = 4;
+    private static final java.util.Map<Long, Float> exposureCache = new java.util.HashMap<>();
+    private static int exposureCacheTick = -1;
     private static final float ANCHOR_POWER = 5.0f;
 
     /** Obrazenia krysztalu dla danego bytu. */
@@ -62,6 +66,15 @@ public final class DamageUtil {
         if (Wrapper.world() == null) return 1;
         if (ignoreTerrain) return 1;
 
+        int tick = com.ares.Ares.get().ticks();
+        if (tick != exposureCacheTick) {
+            exposureCache.clear();
+            exposureCacheTick = tick;
+        }
+        long key = exposureKey(source, entity);
+        Float cached = exposureCache.get(key);
+        if (cached != null) return cached;
+
         Box box = entity.getBoundingBox();
         double d = 1.0 / ((box.maxX - box.minX) * 2.0 + 1.0);
         double e = 1.0 / ((box.maxY - box.minY) * 2.0 + 1.0);
@@ -72,9 +85,12 @@ public final class DamageUtil {
 
         int hits = 0;
         int misses = 0;
-        for (float x = 0; x <= 1.0f; x += d) {
-            for (float y = 0; y <= 1.0f; y += e) {
-                for (float z = 0; z <= 1.0f; z += f) {
+        for (int ix = 0; ix < MAX_SAMPLES; ix++) {
+            double x = (double) ix / (MAX_SAMPLES - 1);
+            for (int iy = 0; iy < MAX_SAMPLES; iy++) {
+                double y = (double) iy / (MAX_SAMPLES - 1);
+                for (int iz = 0; iz < MAX_SAMPLES; iz++) {
+                    double z = (double) iz / (MAX_SAMPLES - 1);
                     double px = MathHelper.lerp(x, box.minX, box.maxX);
                     double py = MathHelper.lerp(y, box.minY, box.maxY);
                     double pz = MathHelper.lerp(z, box.minZ, box.maxZ);
@@ -88,7 +104,16 @@ public final class DamageUtil {
                 }
             }
         }
-        return hits == 0 ? 0 : (float) misses / hits;
+        float exposure = hits == 0 ? 0 : (float) misses / hits;
+        exposureCache.put(key, exposure);
+        return exposure;
+    }
+
+    private static long exposureKey(Vec3d source, Entity entity) {
+        long sx = (long) (source.x * 4);
+        long sy = (long) (source.y * 4);
+        long sz = (long) (source.z * 4);
+        return (sx * 73856093L) ^ (sy * 19349663L) ^ (sz * 83492791L) ^ ((long) entity.getId() * 2654435761L);
     }
 
     /** Finalne obrazenia po pancerzu, enchantach i efektach. */

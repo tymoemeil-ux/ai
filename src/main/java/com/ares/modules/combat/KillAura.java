@@ -37,7 +37,7 @@ public final class KillAura extends Module {
     private final BoolSetting ignoreNaked = add(new BoolSetting("Ignore Naked", "Pomijaj bez pancerza", false).group("Targeting"));
 
     private final IntSetting delay = add(new IntSetting("Delay", "Opuznienie miedzy atakami (ticki)", 10, 0, 20).group("Attack"));
-    private final BoolSetting onlyWeapon = add(new BoolSetting("Only Weapon", "Atakuj tylko bronmieczem/tporem", true).group("Attack"));
+    private final BoolSetting onlyWeapon = add(new BoolSetting("Only Weapon", "Atakuj tylko bronia (miecz/topor)", false).group("Attack"));
     private final ModeSetting<Weapon> weaponMode = add(new ModeSetting<>("Weapon", "Preferowana bron", Weapon.ANY).group("Attack"));
     private final BoolSetting autoSwitch = add(new BoolSetting("Auto Switch", "Sam przelaczaj na bron", false).group("Attack"));
     private final BoolSetting shieldBreaker = add(new BoolSetting("Shield Breaker", "Uzywaj topora na tarcze", true).group("Attack"));
