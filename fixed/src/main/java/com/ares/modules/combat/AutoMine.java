@@ -87,12 +87,14 @@ public final class AutoMine extends Module {
     private int findPickaxeSlot() {
         net.minecraft.entity.player.PlayerInventory inv = InventoryUtil.inventory();
         if (inv == null) return -1;
-        for (int i = 0; i < 9; i++) {
-            net.minecraft.item.Item item = inv.getStack(i).getItem();
-            if (item == Items.NETHERITE_PICKAXE || item == Items.DIAMOND_PICKAXE) return i;
-        }
-        for (int i = 0; i < 9; i++) {
-            if (inv.getStack(i).getItem() instanceof net.minecraft.item.PickaxeItem) return i;
+        net.minecraft.item.Item[] pickaxes = {
+                Items.NETHERITE_PICKAXE, Items.DIAMOND_PICKAXE, Items.IRON_PICKAXE,
+                Items.GOLDEN_PICKAXE, Items.STONE_PICKAXE, Items.WOODEN_PICKAXE
+        };
+        for (net.minecraft.item.Item pick : pickaxes) {
+            for (int i = 0; i < 9; i++) {
+                if (inv.getStack(i).getItem() == pick) return i;
+            }
         }
         return -1;
     }

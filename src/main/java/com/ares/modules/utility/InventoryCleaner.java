@@ -58,8 +58,8 @@ public final class InventoryCleaner extends Module {
     private boolean shouldKeep(ItemStack stack) {
         Item item = stack.getItem();
         if (item == Items.AIR) return true;
-        if (keepArmor.get() && (item instanceof net.minecraft.item.ArmorItem || item == Items.ELYTRA)) return true;
-        if (keepTools.get() && (item instanceof net.minecraft.item.ToolItem || item == Items.SHIELD
+        if (keepArmor.get() && (InventoryUtil.isArmor(item) || item == Items.ELYTRA)) return true;
+        if (keepTools.get() && (stack.isDamageable() || item == Items.SHIELD
                 || item == Items.BOW || item == Items.CROSSBOW)) return true;
         if (keepFood.get() && stack.isFood()) return true;
         if (keepBlocks.get() && item instanceof net.minecraft.item.BlockItem) return true;

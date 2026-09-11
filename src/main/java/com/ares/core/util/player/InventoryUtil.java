@@ -1,5 +1,7 @@
 package com.ares.core.util.player;
 
+import net.minecraft.entity.EquipmentSlot;
+
 import com.ares.core.util.Wrapper;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -222,5 +224,31 @@ public final class InventoryUtil {
             if (net.minecraft.item.BlockItem.getBlock(stack.getItem()) == block) return i;
         }
         return -1;
+    }
+
+    /**
+     * Slot pancerza dla danego przedmiotu (null gdy to nie pancerz).
+     * Uzywamy wlasnej mapy zamiast net.minecraft.item.ArmorItem,
+     * bo ta klasa nie istnieje w yarn 1.21.8.
+     */
+    public static EquipmentSlot armorSlot(Item item) {
+        if (item == Items.NETHERITE_HELMET || item == Items.DIAMOND_HELMET || item == Items.IRON_HELMET
+                || item == Items.GOLDEN_HELMET || item == Items.CHAINMAIL_HELMET || item == Items.LEATHER_HELMET
+                || item == Items.TURTLE_HELMET) return EquipmentSlot.HEAD;
+        if (item == Items.NETHERITE_CHESTPLATE || item == Items.DIAMOND_CHESTPLATE || item == Items.IRON_CHESTPLATE
+                || item == Items.GOLDEN_CHESTPLATE || item == Items.CHAINMAIL_CHESTPLATE
+                || item == Items.LEATHER_CHESTPLATE) return EquipmentSlot.CHEST;
+        if (item == Items.NETHERITE_LEGGINGS || item == Items.DIAMOND_LEGGINGS || item == Items.IRON_LEGGINGS
+                || item == Items.GOLDEN_LEGGINGS || item == Items.CHAINMAIL_LEGGINGS
+                || item == Items.LEATHER_LEGGINGS) return EquipmentSlot.LEGS;
+        if (item == Items.NETHERITE_BOOTS || item == Items.DIAMOND_BOOTS || item == Items.IRON_BOOTS
+                || item == Items.GOLDEN_BOOTS || item == Items.CHAINMAIL_BOOTS
+                || item == Items.LEATHER_BOOTS) return EquipmentSlot.FEET;
+        return null;
+    }
+
+    /** Czy przedmiot jest czescia pancerza (elytra osobno). */
+    public static boolean isArmor(Item item) {
+        return armorSlot(item) != null;
     }
 }

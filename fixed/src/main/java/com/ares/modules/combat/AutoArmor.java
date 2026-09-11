@@ -12,7 +12,6 @@ import com.ares.core.util.player.PlayerUtil;
 import com.ares.core.util.timer.TickTimer;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -116,9 +115,9 @@ public final class AutoArmor extends Module {
         int bestScore = -1;
         for (int i = 0; i < InventoryUtil.MAIN_SIZE; i++) {
             ItemStack stack = inv.getStack(i);
-            if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem armor)) continue;
-            if (armor.getSlotType() != slot) continue;
+            if (stack.isEmpty()) continue;
             if (elytraMode.get() && slot == EquipmentSlot.CHEST && stack.getItem() == Items.ELYTRA) return i;
+            if (InventoryUtil.armorSlot(stack.getItem()) != slot) continue;
             int score = score(stack);
             if (score > bestScore) {
                 bestScore = score;

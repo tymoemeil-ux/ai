@@ -7,6 +7,7 @@ import com.ares.core.event.events.TickEvent;
 import com.ares.core.module.Module;
 import com.ares.core.module.ModuleCategory;
 import com.ares.core.setting.BoolSetting;
+import com.ares.core.setting.FloatSetting;
 import com.ares.core.setting.IntSetting;
 import com.ares.core.util.Wrapper;
 import com.ares.core.util.player.InventoryUtil;
