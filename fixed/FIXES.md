@@ -154,3 +154,33 @@ co zawieszało i wywalało grę na ekranie ładowania terenu.
     (gamma) ustawia jasność tylko przy zmianie.
 
 Po tej zmianie log nie powinien zawierać już ani jednej linii `Illegal option value`.
+
+## Naprawione — runda 8 (PRAWdziwy crash: StackOverflowError)
+
+Z logu `dd.txt` (34 tys. linii) wyszlo dokladnie:
+
+```
+Caused by: java.lang.StackOverflowError
+    at com.ares.Ares.onTick(Ares.java:271)
+    at com.ares.core.event.EventBus.post(EventBus.java:92)
+    at com.ares.core.event.EventBus$Listener.invoke(EventBus.java:31)
+```
+
+42. **Nieskonczona rekurencja**: `Ares.onTick` byl sluchaczem `TickEvent` i jednoczesnie
+    publikowal `TickEvent.Client` (Timer > 1). Kazdy opublikowany event wchodzil znowu do
+    `onTick` -> znowu publikowal -> az do przepelnienia stosu i crashu gry.
+    Teraz `Ares` NIE jest juz sluchaczem: metoda nazywa sie `Ares.tick()` i jest wywolywana
+    bezposrednio z `AresMod` (ClientTickEvents.END_CLIENT_TICK).
+
+43. **Timer ograniczony**: maksymalnie 10 dodatkowych tickow, a `setTimerValue`
+    przycina wartosc do 0.1-10.0.
+
+44. **EventBus: zabezpieczenie przed zapetleniem** - jezeli sluchacz znow publikuje ten sam
+    event, po 8 poziomach publikowanie jest przerywane (zamiast StackOverflowError).
+
+45. **Log juz nie puchnie**: pelny slad stosu drukuje sie tylko 3 pierwsze razy dla danego
+    sluchacza, potem jedna linia co 500 wystapien (wczesniej jeden modul potrafil wygenerowac
+    dziesiatki tysiecy linii i zawiesic gre).
+
+46. Osobno (runda 7): `Illegal option value ... options.fov` - 10 316 linii w jednym logu
+    (Zoom/CustomFOV pisaly FOV poza zakres 30-110). Juz naprawione mixinem GameRenderer.

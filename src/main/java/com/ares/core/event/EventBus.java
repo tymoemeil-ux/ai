@@ -18,6 +18,7 @@ public final class EventBus {
         final Method method;
         final int priority;
         final boolean receiveCancelled;
+        int errors;
 
         Listener(Object owner, Method method, int priority, boolean receiveCancelled) {
             this.owner = owner;
@@ -30,7 +31,16 @@ public final class EventBus {
             try {
                 method.invoke(owner, event);
             } catch (Throwable t) {
-                t.printStackTrace();
+                Throwable cause = t instanceof java.lang.reflect.InvocationTargetException
+                        && t.getCause() != null ? t.getCause() : t;
+                errors++;
+                // Nie zalewamy logu: pelny slad tylko 3 pierwsze razy, pozniej jedna linia.
+                if (errors <= 3) {
+                    cause.printStackTrace();
+                } else if (errors % 500 == 0) {
+                    System.err.println("[Ares] " + method.getDeclaringClass().getSimpleName()
+                            + "." + method.getName() + ": " + cause + " (x" + errors + ")");
+                }
             }
         }
     }
@@ -38,6 +48,7 @@ public final class EventBus {
     private static final EventBus INSTANCE = new EventBus();
 
     private final Map<Class<?>, List<Listener>> listeners = new HashMap<>();
+    private int depth;
 
     private EventBus() {
     }
@@ -86,10 +97,21 @@ public final class EventBus {
             if (found != null) list.addAll(found);
         }
         if (list.isEmpty()) return event;
+        // Zabezpieczenie: jezeli sluchacz znowu publikuje ten sam event (rekurencja),
+        // przerywamy po 8 poziomach - inaczej gra konczy StackOverflowError.
+        if (depth >= 8) {
+            System.err.println("[Ares] Wykryto zapetlenie eventu " + event.getClass().getSimpleName() + " - przerwano.");
+            return event;
+        }
         list.sort(Comparator.comparingInt((Listener l) -> l.priority).reversed());
-        for (Listener listener : new ArrayList<>(list)) {
-            if (event.isCancelled() && !listener.receiveCancelled) continue;
-            listener.invoke(event);
+        depth++;
+        try {
+            for (Listener listener : new ArrayList<>(list)) {
+                if (event.isCancelled() && !listener.receiveCancelled) continue;
+                listener.invoke(event);
+            }
+        } finally {
+            depth--;
         }
         return event;
     }

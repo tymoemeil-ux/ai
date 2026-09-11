@@ -117,7 +117,8 @@ public final class Ares {
     }
 
     public void setTimerValue(float value) {
-        this.timerValue = value;
+        // ograniczamy, zeby Timer nigdy nie wygenerowal petli ktora zawiesi gre
+        this.timerValue = Math.max(0.1f, Math.min(10f, value));
     }
 
     public int fps() {
@@ -252,8 +253,12 @@ public final class Ares {
         modules.register(new ColorsModule());
     }
 
-    @EventHandler
-    private void onTick(TickEvent event) {
+    /**
+     * Glowny tick klienta - wywolywany BEZPOSREDNIO z AresMod (nie przez event bus),
+     * bo wczesniej ta metoda byla sluchaczem TickEvent i sama publikowala TickEvent,
+     * co przy Timerze > 1 konczylo sie nieskonczona rekurencja (StackOverflowError).
+     */
+    public void tick() {
         ticks++;
         frameCounter++;
         long now = System.currentTimeMillis();
@@ -265,10 +270,12 @@ public final class Ares {
 
         handleKeybinds();
 
-        // Timer: dodatkowe eventy ticka gdy mnoznik > 1
-        int extra = (int) Math.floor(timerValue) - 1;
-        for (int i = 0; i < extra; i++) {
-            eventBus.post(new TickEvent.Client());
+        if (Wrapper.nullCheck()) {
+            // Timer: dodatkowe ticki - twardo ograniczone, zeby nigdy nie zapetlic
+            int extra = Math.max(0, Math.min(10, (int) Math.floor(timerValue) - 1));
+            for (int i = 0; i <= extra; i++) {
+                eventBus.post(new TickEvent.Client());
+            }
         }
 
         if (config.isDirty() && ticks % 100 == 0) save();

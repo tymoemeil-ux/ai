@@ -1,7 +1,6 @@
 package com.ares;
 
 import com.ares.core.event.events.Render3DEvent;
-import com.ares.core.event.events.TickEvent;
 import com.ares.core.util.Wrapper;
 import java.nio.file.Path;
 import net.fabricmc.api.ClientModInitializer;
@@ -23,8 +22,7 @@ public final class AresMod implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             try {
-                if (!Wrapper.nullCheck()) return;
-                Ares.get().eventBus().post(new TickEvent.Client());
+                Ares.get().tick();
             } catch (Throwable t) {
                 t.printStackTrace();
             }
