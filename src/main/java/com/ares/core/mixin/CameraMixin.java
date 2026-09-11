@@ -31,12 +31,16 @@ public final class CameraMixin {
     @Inject(method = "update", at = @At("TAIL"))
     private void onUpdate(BlockView area, Entity focusedEntity, boolean thirdPerson,
                           boolean inverseView, float tickDelta, CallbackInfo info) {
-        Freecam freecam = Ares.get().modules().get(Freecam.class);
-        if (freecam == null || !freecam.active() || !Wrapper.nullCheck()) return;
+        try {
+            Freecam freecam = Ares.get().modules().get(Freecam.class);
+            if (freecam == null || !freecam.active() || !Wrapper.nullCheck()) return;
 
-        Vec3d pos = freecam.position();
-        if (pos == null) return;
-        setPos(pos);
-        setRotation(Wrapper.player().getYaw(), Wrapper.player().getPitch());
+            Vec3d pos = freecam.position();
+            if (pos == null) return;
+            setPos(pos);
+            setRotation(Wrapper.player().getYaw(), Wrapper.player().getPitch());
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 }

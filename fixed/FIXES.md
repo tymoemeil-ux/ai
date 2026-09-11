@@ -119,3 +119,20 @@ Przyczyna „żadna komenda ani GUI nie działa” była w runtime, nie w kompil
 34. **HUD uciekał do rogu**: `HudManager.render()` dociskał każdy element do krawędzi ekranu
     i zapisywał tę pozycję (`element.setPosition`), przez co ustawienia z edytora HUDu
     były niszczone przy każdej klatce. Teraz elementy rysują się tam, gdzie są ustawione.
+
+## Naprawione — runda 6 (crash przy ekranie "Loading terrain")
+
+35. **Każdy mixin jest teraz w `try/catch (Throwable)`** (InGameHudMixin, EntityMixin,
+    PlayerEntityMixin, BossBarHudMixin, CameraMixin). Wcześniej wyjątek rzucony w mixinie
+    szedł wprost do waniliowego kodu Minecrafta = crash gry przy ładowaniu świata.
+
+36. **Lambdy Fabric API w `AresMod` też są w try/catch** (tick + WorldRenderEvents.LAST).
+
+37. **HUD nie rysuje się bez gracza** (`Wrapper.nullCheck()`), czyli nie odpala się na ekranie
+    ładowania terenu, gdzie `mc.player` jest jeszcze `null`.
+
+38. **Uszkodzony config nie blokuje startu**: `Ares.init()` łapie wyjątek przy `config.load()`
+    i startuje z ustawieniami domyślnymi.
+
+Uwaga: event bus od rundy 4 łapie wyjątki wewnątrz listenerów, więc po tych zmianach
+żaden błąd w module nie powinien już wywalać gry — w najgorszym razie zobaczysz błąd w logu.

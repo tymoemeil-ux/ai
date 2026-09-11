@@ -148,7 +148,11 @@ public final class Ares {
         friends.init(configDirectory);
         macros.init(configDirectory);
         config.init(configDirectory);
-        config.load();
+        try {
+            config.load();
+        } catch (Throwable t) {
+            System.err.println("[" + NAME + "] Nie udalo sie wczytac configu, startuje z domyslnymi: " + t);
+        }
 
         eventBus.register(this);
         eventBus.register(popCounter);

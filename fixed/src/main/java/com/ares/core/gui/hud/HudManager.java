@@ -42,6 +42,7 @@ public final class HudManager {
 
     @EventHandler
     private void onRender2D(Render2DEvent event) {
+        if (!com.ares.core.util.Wrapper.nullCheck()) return; // np. ekran ladowania terenu
         if (com.ares.Ares.get().mc().currentScreen instanceof com.ares.core.gui.hud.HudEditorScreen) return;
         render(event.context(), event.tickDelta(), event.width(), event.height());
     }

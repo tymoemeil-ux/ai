@@ -22,19 +22,27 @@ public final class AresMod implements ClientModInitializer {
         Ares.get().init(directory);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!Wrapper.nullCheck()) return;
-            Ares.get().eventBus().post(new TickEvent.Client());
+            try {
+                if (!Wrapper.nullCheck()) return;
+                Ares.get().eventBus().post(new TickEvent.Client());
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         });
 
         // Event renderu 3D (ESP, tracery, boxy) - Fabric API podaje nam kontekst swiata.
         WorldRenderEvents.LAST.register(context -> {
-            if (!Wrapper.nullCheck()) return;
-            MatrixStack matrices = context.matrixStack();
-            VertexConsumerProvider consumers = context.consumers();
-            Camera camera = context.camera();
-            if (matrices == null || consumers == null || camera == null) return;
-            float tickDelta = context.tickCounter().getTickProgress(true);
-            Ares.get().postRender3D(new Render3DEvent(matrices, consumers, camera, tickDelta, camera.getPos()));
+            try {
+                if (!Wrapper.nullCheck()) return;
+                MatrixStack matrices = context.matrixStack();
+                VertexConsumerProvider consumers = context.consumers();
+                Camera camera = context.camera();
+                if (matrices == null || consumers == null || camera == null) return;
+                float tickDelta = context.tickCounter().getTickProgress(true);
+                Ares.get().postRender3D(new Render3DEvent(matrices, consumers, camera, tickDelta, camera.getPos()));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         });
 
         Runtime.getRuntime().addShutdownHook(new Thread(Ares.get()::save));

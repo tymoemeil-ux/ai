@@ -15,7 +15,11 @@ public final class BossBarHudMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRender(DrawContext context, CallbackInfo info) {
-        NoRender noRender = Ares.get().modules().get(NoRender.class);
-        if (noRender != null && noRender.bossBar()) info.cancel();
+        try {
+            NoRender noRender = Ares.get().modules().get(NoRender.class);
+            if (noRender != null && noRender.bossBar()) info.cancel();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 }
