@@ -211,3 +211,25 @@ Caused by: java.lang.StackOverflowError
     automatycznie wlaczaja sie: Auto Totem, Offhand, Surround, Auto Crystal, KillAura, Auto Armor.
 
 54. `BlockUtil.canSee` nie rzuca juz NPE gdy nie ma gracza.
+
+## Runda 10 — przebudowa UI (ClickGUI)
+
+55. **Przełącznik (toggle) w każdym wierszu** modułu + płynna animacja - widać od razu,
+    czy moduł jest włączony, bez patrzenia na kolor tła.
+
+56. **Przypisywanie klawiszy z GUI**: środkowy przycisk myszy na module (albo przycisk
+    „Klawisz: X” w nagłówku ustawień) → wciskasz klawisz i gotowe. `Escape`/`Backspace`
+    = usuń bind. Klawisz pokazuje się też jako odznaka w liście modułów (np. `R`, `M1`).
+
+57. **Dymki (tooltip)**: po najechaniu na moduł pokazuje się opis, kategoria, klawisz
+    i stan włączenia.
+
+58. **Klikanie jak w dobrych klientach**: lewy = włącz/wyłącz, prawy = ustawienia.
+
+59. **Kolory kategorii** (Combat czerwony, Movement cyan, Render fiolet, Utility żółty,
+    Client zielony, HUD niebieski) - ikony, paski i dymki.
+
+60. **Stopka z przyciskami**: „Edytor HUD” (otwiera edycję HUD) i „Zapisz” (zapis konfiguracji
+    + powiadomienie), plus podpowiedź sterowania.
+
+61. Komunikat „Brak wyników” gdy wyszukiwarka nic nie znajdzie.

@@ -50,6 +50,11 @@ public final class ClickGuiScreen extends Screen {
 
     private ModuleCategory selectedCategory = ModuleCategory.COMBAT;
     private Module selectedModule;
+    private Module hoveredModule;
+    private Module bindingModule;
+    private final double[] bindButton = new double[4];
+    private final double[] hudButton = new double[4];
+    private final double[] saveButton = new double[4];
     private String search = "";
     private boolean searching;
 
@@ -66,6 +71,55 @@ public final class ClickGuiScreen extends Screen {
 
     public ClickGuiScreen() {
         super(Text.literal("Ares ClickGUI"));
+    }
+
+    /** Nazwa przypisanego klawisza (np. R, M1, -). */
+    private String bindName(int bind) {
+        if (bind == -1) return "-";
+        if (bind <= -100) return "M" + (-bind - 99);
+        try {
+            net.minecraft.client.util.InputUtil.Key key = net.minecraft.client.util.InputUtil.fromKeyCode(bind, 0);
+            String text = key == null ? "?" : key.getLocalizedText().getString();
+            return text.isEmpty() ? "?" : text.toUpperCase();
+        } catch (Throwable t) {
+            return "?";
+        }
+    }
+
+    /** Kolor przypisany do kategorii. */
+    private int colorFor(ModuleCategory category) {
+        return switch (category) {
+            case COMBAT -> 0xFFFF4D6D;
+            case MOVEMENT -> 0xFF22D3EE;
+            case RENDER -> 0xFF7C5CFF;
+            case UTILITY -> 0xFFFFC857;
+            case CLIENT -> 0xFF22C55E;
+            case HUD -> 0xFF60A5FA;
+        };
+    }
+
+    /** Dymek z opisem modulu pod kursorem. */
+    private void drawTooltip(DrawContext context, int mouseX, int mouseY, Module module) {
+        String title = module.name();
+        String description = module.description();
+        String bind = "Klawisz: " + bindName(module.bind());
+        String state = module.isEnabled() ? "Wlaczony" : "Wylaczony";
+
+        double width = Math.max(RenderUtil2D.textWidth(title),
+                Math.max(RenderUtil2D.textWidth(description),
+                        Math.max(RenderUtil2D.textWidth(bind), RenderUtil2D.textWidth(state)))) + 16;
+        double height = 58;
+        double x = Math.min(mouseX + 12, this.width - width - 6);
+        double y = Math.min(mouseY + 12, this.height - height - 6);
+
+        RenderUtil2D.shadow(context, x, y, width, height, 4);
+        RenderUtil2D.roundedRect(context, x, y, width, height, 4, 0xFA14181F);
+        RenderUtil2D.roundedOutline(context, x, y, width, height, 4, Theme.get().outline);
+        RenderUtil2D.text(context, title, x + 8, y + 7, colorFor(module.category()), true);
+        RenderUtil2D.text(context, description, x + 8, y + 21, Theme.get().textDim, true);
+        RenderUtil2D.text(context, bind, x + 8, y + 33, Theme.get().text, true);
+        RenderUtil2D.text(context, state, x + 8, y + 45,
+                module.isEnabled() ? Theme.get().enabled : Theme.get().disabled, true);
     }
 
     private List<Module> visibleModules() {
@@ -181,11 +235,11 @@ public final class ClickGuiScreen extends Screen {
                     ColorUtil.withAlpha(Theme.get().panelLight, (int) (200 + 55 * animation.value())));
 
             if (selected) {
-                RenderUtil2D.rect(context, x + 6, rowY, 2, ROW_HEIGHT - 4, Theme.get().accent);
+                RenderUtil2D.rect(context, x + 6, rowY, 2, ROW_HEIGHT - 4, colorFor(category));
             }
 
             RenderUtil2D.text(context, iconFor(category), x + 14, rowY + 5,
-                    selected ? Theme.get().accent : Theme.get().textDim, false);
+                    selected ? colorFor(category) : Theme.get().textDim, false);
             RenderUtil2D.text(context, category.displayName(), x + 30, rowY + 6,
                     selected ? 0xFFF2F4FA : Theme.get().textDim, true);
 
@@ -229,6 +283,7 @@ public final class ClickGuiScreen extends Screen {
         int maxVisible = (int) (listHeight / (ROW_HEIGHT - 2));
         moduleScrollTarget = Math.max(0, Math.min(moduleScrollTarget, Math.max(0, modules.size() - maxVisible) * (ROW_HEIGHT - 2)));
 
+        hoveredModule = null;
         RenderUtil2D.scissor(context, x, listY, MODULES_WIDTH, listHeight, () -> {
             int index = 0;
             for (Module module : modules) {
@@ -255,21 +310,38 @@ public final class ClickGuiScreen extends Screen {
                             Theme.get().accent);
                 }
 
+                if (hovered) hoveredModule = module;
+
                 RenderUtil2D.text(context, module.name(), x + 14, rowY + 7,
                         module.isEnabled() ? 0xFFF2F4FA : Theme.get().textDim, true);
 
-                if (module.info() != null) {
-                    String info = module.info();
-                    RenderUtil2D.text(context, info,
-                            x + MODULES_WIDTH - 14 - RenderUtil2D.textWidth(info), rowY + 7,
-                            Theme.get().textDim, true);
-                }
+                // przelacznik
+                double switchW = 20, switchH = 11;
+                double switchX = x + MODULES_WIDTH - 14 - switchW;
+                double switchY = rowY + 6;
+                RenderUtil2D.roundedRect(context, switchX, switchY, switchW, switchH, switchH / 2.0,
+                        module.isEnabled() ? ColorUtil.withAlpha(Theme.get().accent, 230) : 0x40FFFFFF);
+                RenderUtil2D.roundedRect(context,
+                        switchX + 1.5 + (switchW - switchH + 1.0) * animation.value(),
+                        switchY + 1.5, switchH - 3, switchH - 3, (switchH - 3) / 2.0, 0xFFF2F4FA);
+
+                // klawisz
+                String bindText = bindName(module.bind());
+                RenderUtil2D.text(context, bindText, switchX - 6 - RenderUtil2D.textWidth(bindText),
+                        rowY + 7, Theme.get().textDim, true);
                 index++;
             }
         });
 
         drawScrollbar(context, x + MODULES_WIDTH - 4, listY, 2, listHeight,
                 modules.size(), maxVisible, moduleScroll, (ROW_HEIGHT - 2));
+
+        if (modules.isEmpty()) {
+            RenderUtil2D.centeredText(context, "Brak wynikow", x + MODULES_WIDTH / 2.0,
+                    listY + listHeight / 2.0, Theme.get().textDim, true);
+        }
+
+        if (hoveredModule != null) drawTooltip(context, mouseX, mouseY, hoveredModule);
     }
 
     private void drawSettings(DrawContext context, int mouseX, int mouseY, double x, double y) {
@@ -287,6 +359,7 @@ public final class ClickGuiScreen extends Screen {
         RenderUtil2D.text(context, selectedModule.name(), x + 12, y + 10, 0xFFF2F4FA, true);
 
         double toggleWidth = 46;
+        String bindLabel = "Klawisz: " + bindName(selectedModule.bind());
         double toggleX = x + width - toggleWidth - 12;
         boolean toggleHovered = mouseX >= toggleX && mouseX <= toggleX + toggleWidth
                 && mouseY >= y + 6 && mouseY <= y + 22;
@@ -295,6 +368,19 @@ public final class ClickGuiScreen extends Screen {
                         : (toggleHovered ? 0xFF242A36 : 0xFF1F2430));
         RenderUtil2D.centeredText(context, selectedModule.isEnabled() ? "ON" : "OFF",
                 toggleX + toggleWidth / 2.0, y + 10, 0xFFF2F4FA, true);
+
+        // przycisk przypisywania klawisza
+        String bindText = (bindingModule == selectedModule) ? "Wcisnij klawisz..." : bindLabel;
+        double bindButtonWidth = RenderUtil2D.textWidth(bindText) + 12;
+        double bindButtonX = toggleX - bindButtonWidth - 8;
+        bindButton[0] = bindButtonX;
+        bindButton[1] = y + 6;
+        bindButton[2] = bindButtonWidth;
+        bindButton[3] = 16;
+        RenderUtil2D.roundedRect(context, bindButtonX, y + 6, bindButtonWidth, 16, 4,
+                bindingModule == selectedModule ? ColorUtil.withAlpha(Theme.get().accent, 170) : 0xFF1F2430);
+        RenderUtil2D.text(context, bindText, bindButtonX + 6, y + 10,
+                bindingModule == selectedModule ? 0xFFF2F4FA : Theme.get().text, true);
 
         double listY = y + 30;
         double listHeight = height - 46;
@@ -329,9 +415,26 @@ public final class ClickGuiScreen extends Screen {
     private void drawFooter(DrawContext context, int mouseX, int mouseY, double x, double y) {
         RenderUtil2D.rect(context, x + 10, y, frameWidth - 20, 1, Theme.get().outline);
         String description = selectedModule == null
-                ? "Najedz na modul, aby zobaczyc opis"
+                ? "Lewy przycisk = wlacz/wylacz   Prawy = ustawienia   Srodek = przypisz klawisz"
                 : selectedModule.description();
         RenderUtil2D.text(context, description, x + 12, y + 8, Theme.get().textDim, true);
+
+        drawFooterButton(context, mouseX, mouseY, "Edytor HUD", x + frameWidth - 210, y + 5, hudButton);
+        drawFooterButton(context, mouseX, mouseY, "Zapisz", x + frameWidth - 130, y + 5, saveButton);
+    }
+
+    private void drawFooterButton(DrawContext context, int mouseX, int mouseY, String label,
+                                  double x, double y, double[] bounds) {
+        double width = RenderUtil2D.textWidth(label) + 16;
+        double height = 15;
+        boolean hovered = mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+        RenderUtil2D.roundedRect(context, x, y, width, height, 3,
+                hovered ? ColorUtil.withAlpha(Theme.get().accent, 170) : 0xFF1F2430);
+        RenderUtil2D.text(context, label, x + 8, y + 4, hovered ? 0xFFF2F4FA : Theme.get().textDim, true);
+        bounds[0] = x;
+        bounds[1] = y;
+        bounds[2] = width;
+        bounds[3] = height;
     }
 
     private void drawScrollbar(DrawContext context, double x, double y, double width, double height,
@@ -384,11 +487,14 @@ public final class ClickGuiScreen extends Screen {
             if (mouseX >= frameX + SIDEBAR_WIDTH + 6 && mouseX <= frameX + SIDEBAR_WIDTH + MODULES_WIDTH - 6
                     && mouseY >= rowY && mouseY <= rowY + ROW_HEIGHT - 4) {
                 if (button == 0) {
+                    module.toggle();
+                    Ares.get().config().markDirty();
+                } else if (button == 1) {
                     selectedModule = module;
                     settingsScrollTarget = 0;
                     rebuildSettings();
-                } else if (button == 1) {
-                    module.toggle();
+                } else if (button == 2) {
+                    bindingModule = module;
                 }
                 return true;
             }
@@ -408,10 +514,32 @@ public final class ClickGuiScreen extends Screen {
             }
         }
 
+        // przycisk klawisza
+        if (selectedModule != null && inside(mouseX, mouseY, bindButton)) {
+            bindingModule = bindingModule == selectedModule ? null : selectedModule;
+            return true;
+        }
+
+        // przyciski stopki
+        if (inside(mouseX, mouseY, hudButton)) {
+            if (this.client != null) this.client.setScreen(new com.ares.core.gui.hud.HudEditorScreen());
+            return true;
+        }
+        if (inside(mouseX, mouseY, saveButton)) {
+            Ares.get().save();
+            Ares.get().notifications().send("Ares", "Zapisano ustawienia", 2000);
+            return true;
+        }
+
         for (Widget widget : widgets) {
             widget.mouseClicked(mouseX, mouseY, button);
         }
         return true;
+    }
+
+    private boolean inside(double mouseX, double mouseY, double[] bounds) {
+        return bounds[2] > 0 && mouseX >= bounds[0] && mouseX <= bounds[0] + bounds[2]
+                && mouseY >= bounds[1] && mouseY <= bounds[1] + bounds[3];
     }
 
     @Override
@@ -446,6 +574,18 @@ public final class ClickGuiScreen extends Screen {
                 searching = false;
                 return true;
             }
+            return true;
+        }
+
+        if (bindingModule != null) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_BACKSPACE
+                    || keyCode == GLFW.GLFW_KEY_DELETE) {
+                bindingModule.setBind(-1);
+            } else {
+                bindingModule.setBind(keyCode);
+            }
+            bindingModule = null;
+            Ares.get().config().markDirty();
             return true;
         }
 
