@@ -134,12 +134,8 @@ public final class Ares {
     public LivingEntity target() {
         AutoCrystal crystal = modules.get(AutoCrystal.class);
         if (crystal != null && crystal.isEnabled() && crystal.target() != null) return crystal.target();
-        KillAura aura = modules.get(KillAura.class);
-        if (aura != null && aura.isEnabled()) {
-            com.ares.modules.combat.KillAura module = aura;
-            String info = module.info();
-        }
         AutoAnchor anchor = modules.get(AutoAnchor.class);
+        if (anchor != null && anchor.isEnabled()) return null;
         return null;
     }
 
@@ -179,6 +175,9 @@ public final class Ares {
         modules.register(new Burrow());
         modules.register(new AutoAnvil());
         modules.register(new AutoEXP());
+        modules.register(new AutoGap());
+        modules.register(new AutoMine());
+        modules.register(new Quiver());
 
         // MOVEMENT
         modules.register(new Speed());
@@ -236,6 +235,8 @@ public final class Ares {
         modules.register(new Hitboxes());
         modules.register(new AutoLog());
         modules.register(new Notifier());
+        modules.register(new MiddleClickFriend());
+        modules.register(new HotbarRefill());
 
         // CLIENT / HUD
         modules.register(new ClickGuiModule());
@@ -243,6 +244,7 @@ public final class Ares {
         modules.register(new HudEditorModule());
         modules.register(new FriendsModule());
         modules.register(new MacrosModule());
+        modules.register(new ColorsModule());
     }
 
     @EventHandler

@@ -21,7 +21,7 @@ public final class Step extends Module {
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
         if (!Wrapper.player().isOnGround()) return;
-        if (Wrapper.player().input.movementForward == 0 && Wrapper.player().input.movementSideways == 0) return;
+        if (!com.ares.core.util.player.PlayerUtil.isMoving()) return;
 
         // 1.21.8 nie udostepnia setStepHeight - podnosimy gracza predkoscia
         if (Wrapper.player().horizontalCollision) {

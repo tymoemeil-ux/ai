@@ -18,7 +18,7 @@ public final class AutoJump extends Module {
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
         if (!Wrapper.player().isOnGround()) return;
-        if (Wrapper.player().input.movementForward == 0 && Wrapper.player().input.movementSideways == 0) return;
+        if (!com.ares.core.util.player.PlayerUtil.isMoving()) return;
         Wrapper.player().jump();
     }
 }

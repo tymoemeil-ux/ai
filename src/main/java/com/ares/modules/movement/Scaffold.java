@@ -32,8 +32,7 @@ public final class Scaffold extends Module {
     @EventHandler
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
-        if (onlyWhenMoving.get() && Wrapper.player().input.movementForward == 0
-                && Wrapper.player().input.movementSideways == 0) return;
+        if (onlyWhenMoving.get() && !com.ares.core.util.player.PlayerUtil.isMoving()) return;
 
         timer.increment();
         if (!timer.passed(delay.get())) return;

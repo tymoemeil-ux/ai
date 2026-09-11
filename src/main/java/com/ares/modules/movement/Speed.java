@@ -36,8 +36,8 @@ public final class Speed extends Module {
         Vec3d velocity = Wrapper.player().getVelocity();
         float yaw = Wrapper.player().getYaw() * ((float) Math.PI / 180);
 
-        double forward = Wrapper.player().input.movementForward;
-        double strafe = Wrapper.player().input.movementSideways;
+        double forward = com.ares.core.util.player.PlayerUtil.forwardInput();
+        double strafe = com.ares.core.util.player.PlayerUtil.strafeInput();
 
         if (forward == 0 && strafe == 0) return;
 

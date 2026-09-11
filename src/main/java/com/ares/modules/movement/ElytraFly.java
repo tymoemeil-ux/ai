@@ -41,7 +41,7 @@ public final class ElytraFly extends Module {
 
         Vec3d velocity = Wrapper.player().getVelocity();
         float yaw = Wrapper.player().getYaw() * ((float) Math.PI / 180);
-        double forward = Wrapper.player().input.movementForward;
+        double forward = com.ares.core.util.player.PlayerUtil.forwardInput();
 
         double motionX = forward * Math.sin(yaw) * -1;
         double motionZ = forward * Math.cos(yaw);

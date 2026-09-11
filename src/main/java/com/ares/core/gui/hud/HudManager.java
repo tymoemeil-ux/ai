@@ -26,6 +26,7 @@ public final class HudManager {
         elements.add(new HudElements.Compass(200, 6));
         elements.add(new HudElements.Radar(300, 6));
         elements.add(new HudElements.Notifications(300, 160));
+        elements.add(new HudElements.Inventory(140, 300));
     }
 
     public List<HudElement> elements() {

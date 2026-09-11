@@ -23,9 +23,8 @@ public final class NoSlow extends Module {
     @EventHandler
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
-        if (items.get() && PlayerUtil.isUsingItem()) {
-            Wrapper.player().input.movementForward *= 5f;
-            Wrapper.player().input.movementSideways *= 5f;
+        if (items.get() && PlayerUtil.isUsingItem() && PlayerUtil.isMoving()) {
+            PlayerUtil.applyMovement(PlayerUtil.forwardInput(), PlayerUtil.strafeInput(), 0.28);
         }
     }
 

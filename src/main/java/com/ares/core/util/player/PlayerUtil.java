@@ -79,6 +79,43 @@ public final class PlayerUtil {
                 || item == Items.MACE;
     }
 
+    /** Wektor ruchu gracza (x = strafe, y = forward) - 1.21.8 Input API. */
+    public static net.minecraft.util.math.Vec2f movementInput() {
+        net.minecraft.client.network.ClientPlayerEntity player = Wrapper.player();
+        return player == null ? new net.minecraft.util.math.Vec2f(0, 0) : player.input.getMovementInput();
+    }
+
+    public static float forwardInput() {
+        return movementInput().y;
+    }
+
+    public static float strafeInput() {
+        return movementInput().x;
+    }
+
+    public static boolean isMoving() {
+        return forwardInput() != 0 || strafeInput() != 0;
+    }
+
+    /** Ruch z pominieciem Input (np. NoSlow / InventoryMove). */
+    public static void applyMovement(double forward, double strafe, double speed) {
+        net.minecraft.client.network.ClientPlayerEntity player = Wrapper.player();
+        if (player == null) return;
+        if (forward == 0 && strafe == 0) return;
+
+        float yaw = player.getYaw() * ((float) Math.PI / 180);
+        double motionX = forward * Math.sin(yaw) * -1 + strafe * Math.cos(yaw);
+        double motionZ = forward * Math.cos(yaw) - strafe * Math.sin(yaw);
+
+        double length = Math.sqrt(motionX * motionX + motionZ * motionZ);
+        if (length == 0) return;
+
+        motionX = motionX / length * speed;
+        motionZ = motionZ / length * speed;
+
+        player.setVelocity(new net.minecraft.util.math.Vec3d(motionX, player.getVelocity().y, motionZ));
+    }
+
     public static double hunger() {
         net.minecraft.client.network.ClientPlayerEntity player = Wrapper.player();
         if (player == null) return 20;

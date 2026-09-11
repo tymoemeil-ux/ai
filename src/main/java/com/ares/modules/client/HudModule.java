@@ -21,6 +21,7 @@ public final class HudModule extends Module {
     private final BoolSetting compass = add(new BoolSetting("Compass", "Kompas", false).group("Elements"));
     private final BoolSetting radar = add(new BoolSetting("Radar", "Minimapa", false).group("Elements"));
     private final BoolSetting notifications = add(new BoolSetting("Notifications", "Powiadomienia", true).group("Elements"));
+    private final BoolSetting inventory = add(new BoolSetting("Inventory", "Podglad ekwipunku", false).group("Elements"));
 
     public HudModule() {
         super("HUD", "Nakladka informacyjna na ekranie", ModuleCategory.HUD);
@@ -46,6 +47,7 @@ public final class HudModule extends Module {
         com.ares.Ares.get().hud().byName("Compass").setEnabled(compass.get());
         com.ares.Ares.get().hud().byName("Radar").setEnabled(radar.get());
         com.ares.Ares.get().hud().byName("Notifications").setEnabled(notifications.get());
+        com.ares.Ares.get().hud().byName("Inventory").setEnabled(inventory.get());
     }
 
     public boolean hudEnabled() {

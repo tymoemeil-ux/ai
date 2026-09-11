@@ -4,18 +4,25 @@
   "version": "${version}",
   "name": "Ares CrystalPvP",
   "description": "Zaawansowany klient CrystalPvP na 1.21.8 Fabric - Auto Crystal, Anchor Aura, Auto Anchor, Auto Totem i 70+ modulow.",
-  "authors": ["tymoemeil"],
+  "authors": [
+    "tymoemeil"
+  ],
   "contact": {},
   "license": "MIT",
   "environment": "client",
   "entrypoints": {
-    "client": ["com.ares.AresMod"]
+    "client": [
+      "com.ares.AresMod"
+    ]
   },
-  "mixins": ["ares.mixins.json"],
+  "mixins": [
+    "ares.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.16.0",
     "minecraft": "1.21.8",
     "java": ">=21",
     "fabric-api": "*"
-  }
+  },
+  "icon": "assets/ares/icon.png"
 }

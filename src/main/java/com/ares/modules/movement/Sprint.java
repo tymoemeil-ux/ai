@@ -23,8 +23,9 @@ public final class Sprint extends Module {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
         if (Wrapper.player().isTouchingWater() && !Wrapper.player().getAbilities().flying) return;
 
-        boolean moving = Wrapper.player().input.movementForward != 0 || Wrapper.player().input.movementSideways != 0;
-        if (onlyForward.get() && Wrapper.player().input.movementForward <= 0) return;
+        boolean moving = com.ares.core.util.player.PlayerUtil.isMoving();
+        if (onlyForward.get() && com.ares.core.util.player.PlayerUtil.forwardInput() <= 0
+                && com.ares.core.util.player.PlayerUtil.strafeInput() == 0) return;
         if (!moving && !rageMode.get()) return;
 
         Wrapper.player().setSprinting(true);

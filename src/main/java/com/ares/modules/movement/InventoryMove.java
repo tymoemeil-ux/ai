@@ -27,8 +27,7 @@ public final class InventoryMove extends Module {
         if (Wrapper.mc().options.leftKey.isPressed()) sideways += 1;
         if (Wrapper.mc().options.rightKey.isPressed()) sideways -= 1;
 
-        Wrapper.player().input.movementForward = forward;
-        Wrapper.player().input.movementSideways = sideways;
+        com.ares.core.util.player.PlayerUtil.applyMovement(forward, sideways, 0.24);
 
         if (Wrapper.mc().options.jumpKey.isPressed() && Wrapper.player().isOnGround()) {
             Wrapper.player().jump();
