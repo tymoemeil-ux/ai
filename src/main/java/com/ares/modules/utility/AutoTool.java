@@ -53,7 +53,7 @@ public final class AutoTool extends Module {
 
         if (bestSlot == -1 || bestSpeed <= 1.0f) return;
 
-        if (previousSlot == -1) previousSlot = Wrapper.player().getInventory().selectedSlot;
+        if (previousSlot == -1) previousSlot = Wrapper.player().getInventory().getSelectedSlot();
         if (silent.get()) InventoryUtil.selectSilently(bestSlot);
         else InventoryUtil.selectSlot(bestSlot);
     }

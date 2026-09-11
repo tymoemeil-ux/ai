@@ -52,7 +52,7 @@ public final class HoleFiller extends Module {
 
         if (holes.isEmpty()) return;
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findBlockHotbarSlot(Blocks.OBSIDIAN);
         if (slot == -1) return;
 

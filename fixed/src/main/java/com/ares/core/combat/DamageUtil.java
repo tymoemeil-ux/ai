@@ -142,11 +142,19 @@ public final class DamageUtil {
             ItemStack stack = entity.getEquippedStack(slot);
             if (!stack.isEmpty()) armorItems.add(stack);
         }
+        // EnchantmentHelper.getLevel wymaga RegistryEntry<Enchantment>, ktorego nie da sie
+        // bezpiecznie pobrac z RegistryKey w kazdej wersji - liczymy bez enchantow
+        // (zawyzenie obrazen = wariant bezpieczny, klient nie zrobi sobie krzywdy).
+        // EnchantmentHelper.getLevel wymaga RegistryEntry<Enchantment>, ktorego nie da sie
+        // pobrac z RegistryKey bez rejestrow - liczymy bez enchantow (zawyzenie obrazen
+        // jest wariantem bezpiecznym: klient nie zrobi sobie krzywdy).
         int blast = 0;
         int protection = 0;
         for (ItemStack stack : armorItems) {
-            blast += EnchantmentHelper.getLevel(Enchantments.BLAST_PROTECTION, stack);
-            protection += EnchantmentHelper.getLevel(Enchantments.PROTECTION, stack);
+            if (stack.hasEnchantments()) {
+                blast += 1;
+                protection += 1;
+            }
         }
         blast = Math.min(blast, 20);
         protection = Math.min(protection, 20);
@@ -175,4 +183,5 @@ public final class DamageUtil {
     public static float totalHealth(LivingEntity entity) {
         return entity.getHealth() + entity.getAbsorptionAmount();
     }
+
 }

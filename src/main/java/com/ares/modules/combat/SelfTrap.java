@@ -46,7 +46,7 @@ public final class SelfTrap extends Module {
                 feet.north().up(), feet.south().up(), feet.east().up(), feet.west().up()
         };
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findBlockHotbarSlot(Blocks.OBSIDIAN);
         if (slot == -1) return;
 

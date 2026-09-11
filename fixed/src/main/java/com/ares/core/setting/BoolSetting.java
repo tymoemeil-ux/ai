@@ -26,4 +26,10 @@ public class BoolSetting extends Setting<Boolean> {
         }
         return false;
     }
+
+    @Override
+    public BoolSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

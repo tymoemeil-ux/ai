@@ -85,7 +85,7 @@ public final class InventoryUtil {
     public static void selectSlot(int slot) {
         ClientPlayerEntity player = Wrapper.player();
         if (player == null || slot < 0 || slot > 8) return;
-        player.getInventory().selectedSlot = slot;
+        player.getInventory().setSelectedSlot(slot);
         if (player.networkHandler != null) {
             player.networkHandler.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
         }
@@ -95,7 +95,7 @@ public final class InventoryUtil {
     public static void selectSilently(int slot) {
         ClientPlayerEntity player = Wrapper.player();
         if (player == null || slot < 0 || slot > 8) return;
-        player.getInventory().selectedSlot = slot;
+        player.getInventory().setSelectedSlot(slot);
     }
 
     /** Przelacza na pierwszy slot z danym itemem w hotbarze. */
@@ -221,7 +221,8 @@ public final class InventoryUtil {
         for (int i = 0; i < 9; i++) {
             ItemStack stack = inv.getStack(i);
             if (stack.isEmpty()) continue;
-            if (net.minecraft.item.BlockItem.getBlock(stack.getItem()) == block) return i;
+            if (stack.getItem() instanceof net.minecraft.item.BlockItem blockItem
+                    && blockItem.getBlock() == block) return i;
         }
         return -1;
     }

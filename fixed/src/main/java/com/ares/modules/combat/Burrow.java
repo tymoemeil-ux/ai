@@ -45,7 +45,7 @@ public final class Burrow extends Module {
     private void burrow() {
         BlockPos feet = Wrapper.player().getBlockPos();
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findBlockHotbarSlot(Blocks.OBSIDIAN);
         if (slot == -1) slot = InventoryUtil.findBlockHotbarSlot(Blocks.ENDER_CHEST);
         if (slot == -1) return;

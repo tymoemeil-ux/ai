@@ -51,4 +51,10 @@ public class ColorSetting extends Setting<Integer> {
             return false;
         }
     }
+
+    @Override
+    public ColorSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

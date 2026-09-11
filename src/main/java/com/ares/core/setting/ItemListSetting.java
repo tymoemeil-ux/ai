@@ -30,4 +30,10 @@ public class ItemListSetting extends Setting<List<String>> {
         }
         return true;
     }
+
+    @Override
+    public ItemListSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

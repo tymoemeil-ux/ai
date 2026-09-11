@@ -68,7 +68,7 @@ public final class InteractionUtil {
     public static boolean placeWith(Block block, BlockPos pos, boolean rotate, boolean silent, boolean swing) {
         int slot = InventoryUtil.findBlockHotbarSlot(block);
         if (slot == -1) return false;
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         InventoryUtil.selectSilently(slot);
         boolean placed = place(pos, rotate, Hand.MAIN_HAND, swing);
         if (silent) InventoryUtil.selectSilently(previous);
@@ -124,7 +124,7 @@ public final class InteractionUtil {
     public static boolean holdingBlock(Block block) {
         ItemStack stack = InventoryUtil.mainHand();
         if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) return false;
-        return BlockItem.getBlock(stack.getItem()) == block;
+        return ((BlockItem) stack.getItem()).getBlock() == block;
     }
 
     /** Lista pozycji wokol podanej pozycji (do Surround / Trap / HoleFiller). */

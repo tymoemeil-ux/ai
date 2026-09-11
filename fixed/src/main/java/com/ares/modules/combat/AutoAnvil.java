@@ -51,7 +51,7 @@ public final class AutoAnvil extends Module {
         BlockPos pos = target.getBlockPos().up(height.get());
         if (!BlockUtil.isReplaceable(pos)) return;
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findBlockHotbarSlot(Blocks.ANVIL);
         if (slot == -1) return;
 

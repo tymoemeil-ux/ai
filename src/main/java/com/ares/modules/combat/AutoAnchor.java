@@ -141,7 +141,7 @@ public final class AutoAnchor extends Module {
 
         if (best == null) return false;
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int anchorSlot = InventoryUtil.findHotbarItem(Items.RESPAWN_ANCHOR);
         if (anchorSlot == -1) return false;
 
@@ -162,7 +162,7 @@ public final class AutoAnchor extends Module {
     }
 
     private void chargeAnchor() {
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int glowSlot = InventoryUtil.findHotbarItem(Items.GLOWSTONE);
         if (glowSlot == -1) return;
 
@@ -190,7 +190,7 @@ public final class AutoAnchor extends Module {
         boolean lethal = lethalOverride.get() && DamageUtil.isLethal(damage, target);
         if (!lethal && damage < minDamage.get()) return false;
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int nonGlowSlot = findNonGlowstoneSlot();
         if (nonGlowSlot != -1) {
             if (switchMode.get() == SwitchMode.NORMAL) InventoryUtil.selectSlot(nonGlowSlot);

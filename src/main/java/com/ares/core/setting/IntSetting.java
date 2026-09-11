@@ -36,4 +36,10 @@ public class IntSetting extends NumberSetting<Integer> {
             return false;
         }
     }
+
+    @Override
+    public IntSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

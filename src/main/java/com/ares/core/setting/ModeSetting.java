@@ -38,4 +38,10 @@ public class ModeSetting<T extends Enum<T>> extends Setting<T> {
         }
         return false;
     }
+
+    @Override
+    public ModeSetting<T> group(String group) {
+        super.group(group);
+        return this;
+    }
 }

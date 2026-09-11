@@ -112,7 +112,7 @@ public final class AnchorAura extends Module {
     }
 
     private boolean place(BlockPos pos) {
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findHotbarItem(Items.RESPAWN_ANCHOR);
         if (slot == -1) return false;
 
@@ -130,7 +130,7 @@ public final class AnchorAura extends Module {
     }
 
     private boolean charge(BlockPos pos) {
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findHotbarItem(Items.GLOWSTONE);
         if (slot == -1) return false;
 
@@ -157,7 +157,7 @@ public final class AnchorAura extends Module {
     }
 
     private void detonate(BlockPos pos) {
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         net.minecraft.entity.player.PlayerInventory inv = InventoryUtil.inventory();
         if (inv != null) {
             for (int i = 0; i < 9; i++) {

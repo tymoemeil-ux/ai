@@ -190,7 +190,7 @@ public final class AutoCrystal extends Module {
         renderCrystal = best;
         renderStartTime = System.currentTimeMillis();
 
-        int previousSlot = Wrapper.player().getInventory().selectedSlot;
+        int previousSlot = Wrapper.player().getInventory().getSelectedSlot();
         if (antiWeakness.get() && PlayerUtil.hasWeakness() && !PlayerUtil.holdingWeapon()) {
             int sword = findWeaponSlot();
             if (sword != -1) {
@@ -257,7 +257,7 @@ public final class AutoCrystal extends Module {
         renderPos = best;
         renderStartTime = System.currentTimeMillis();
 
-        int previousSlot = Wrapper.player().getInventory().selectedSlot;
+        int previousSlot = Wrapper.player().getInventory().getSelectedSlot();
         int crystalSlot = InventoryUtil.findHotbarItem(Items.END_CRYSTAL);
         if (crystalSlot == -1) return false;
 

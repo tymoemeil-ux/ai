@@ -52,7 +52,7 @@ public final class AnchorUtil {
     public static boolean canCharge(BlockPos pos) {
         BlockState state = BlockUtil.state(pos);
         if (!state.isOf(Blocks.RESPAWN_ANCHOR)) return false;
-        return RespawnAnchorBlock.canCharge(state);
+        return state.get(RespawnAnchorBlock.CHARGES) < RespawnAnchorBlock.MAX_CHARGES;
     }
 
     /** Miejsca wokol celu gdzie warto postawic anchor. */

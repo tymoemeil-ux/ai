@@ -44,7 +44,7 @@ public final class AutoEat extends Module {
         int slot = findFoodSlot();
         if (slot == -1) return;
 
-        if (previousSlot == -1) previousSlot = Wrapper.player().getInventory().selectedSlot;
+        if (previousSlot == -1) previousSlot = Wrapper.player().getInventory().getSelectedSlot();
         InventoryUtil.selectSlot(slot);
         InteractionUtil.useItem(Hand.MAIN_HAND);
         Wrapper.player().swingHand(Hand.MAIN_HAND);
@@ -61,7 +61,7 @@ public final class AutoEat extends Module {
                 if (gapples.get()) return i;
                 continue;
             }
-            if (stack.isFood()) return i;
+            if (stack.getUseAction() == net.minecraft.util.UseAction.EAT) return i;
         }
         return -1;
     }

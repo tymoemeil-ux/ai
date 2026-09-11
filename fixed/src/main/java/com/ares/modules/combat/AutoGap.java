@@ -55,7 +55,7 @@ public final class AutoGap extends Module {
         int slot = findGapSlot();
         if (slot == -1) return;
 
-        if (previousSlot == -1) previousSlot = Wrapper.player().getInventory().selectedSlot;
+        if (previousSlot == -1) previousSlot = Wrapper.player().getInventory().getSelectedSlot();
         InventoryUtil.selectSlot(slot);
         InteractionUtil.useItem(Hand.MAIN_HAND);
         Wrapper.player().swingHand(Hand.MAIN_HAND);

@@ -28,4 +28,10 @@ public class FloatSetting extends NumberSetting<Float> {
             return false;
         }
     }
+
+    @Override
+    public FloatSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

@@ -55,7 +55,8 @@ public final class PlayerUtil {
     }
 
     private static boolean isFood(ItemStack stack) {
-        return stack != null && stack.isFood();
+        return stack != null && !stack.isEmpty()
+                && stack.getUseAction() == net.minecraft.util.UseAction.EAT;
     }
 
     public static boolean hasWeakness() {

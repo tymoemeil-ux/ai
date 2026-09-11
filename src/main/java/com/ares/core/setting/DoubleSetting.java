@@ -28,4 +28,10 @@ public class DoubleSetting extends NumberSetting<Double> {
             return false;
         }
     }
+
+    @Override
+    public DoubleSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

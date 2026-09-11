@@ -15,4 +15,10 @@ public class BindSetting extends Setting<Integer> {
             return false;
         }
     }
+
+    @Override
+    public BindSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

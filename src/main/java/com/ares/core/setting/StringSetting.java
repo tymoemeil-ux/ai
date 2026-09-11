@@ -11,4 +11,10 @@ public class StringSetting extends Setting<String> {
         set(input);
         return true;
     }
+
+    @Override
+    public StringSetting group(String group) {
+        super.group(group);
+        return this;
+    }
 }

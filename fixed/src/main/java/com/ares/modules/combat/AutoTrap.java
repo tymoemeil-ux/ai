@@ -59,7 +59,7 @@ public final class AutoTrap extends Module {
             positions.add(feet.up().up());
         }
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findBlockHotbarSlot(Blocks.OBSIDIAN);
         if (slot == -1) return;
 

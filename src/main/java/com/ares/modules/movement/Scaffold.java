@@ -43,7 +43,7 @@ public final class Scaffold extends Module {
         int slot = findBlockSlot();
         if (slot == -1) return;
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         if (silent.get()) InventoryUtil.selectSilently(slot);
         else InventoryUtil.selectSlot(slot);
 

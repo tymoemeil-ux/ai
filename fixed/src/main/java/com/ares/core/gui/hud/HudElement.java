@@ -10,13 +10,13 @@ public abstract class HudElement {
     public enum Alignment { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, CENTER }
 
     private final String name;
-    private double x;
-    private double y;
-    private double width = 60;
-    private double height = 20;
-    private double scale = 1.0;
-    private boolean enabled = true;
-    private boolean background = false;
+    protected double x;
+    protected double y;
+    protected double width = 60;
+    protected double height = 20;
+    protected double scale = 1.0;
+    protected boolean enabled = true;
+    protected boolean background = false;
 
     protected HudElement(String name, double x, double y) {
         this.name = name;

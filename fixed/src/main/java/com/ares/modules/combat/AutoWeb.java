@@ -43,7 +43,7 @@ public final class AutoWeb extends Module {
         timer.increment();
         if (!timer.passed(delay.get())) return;
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int slot = InventoryUtil.findBlockHotbarSlot(Blocks.COBWEB);
         if (slot == -1) return;
 

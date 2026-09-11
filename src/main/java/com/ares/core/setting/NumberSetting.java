@@ -40,4 +40,10 @@ public abstract class NumberSetting<T extends Number> extends Setting<T> {
         double f = (get().doubleValue() - min.doubleValue()) / range();
         return Math.max(0, Math.min(1, f));
     }
+
+    @Override
+    public NumberSetting<T> group(String group) {
+        super.group(group);
+        return this;
+    }
 }

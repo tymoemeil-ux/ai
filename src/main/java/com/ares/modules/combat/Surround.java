@@ -63,7 +63,7 @@ public final class Surround extends Module {
         BlockPos feet = Wrapper.player().getBlockPos();
         List<BlockPos> positions = HoleUtil.surroundPositions(feet);
 
-        int previous = Wrapper.player().getInventory().selectedSlot;
+        int previous = Wrapper.player().getInventory().getSelectedSlot();
         int blockSlot = InventoryUtil.findBlockHotbarSlot(Blocks.OBSIDIAN);
         if (blockSlot == -1) return;
 

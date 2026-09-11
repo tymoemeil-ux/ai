@@ -61,7 +61,7 @@ public final class InventoryCleaner extends Module {
         if (keepArmor.get() && (InventoryUtil.isArmor(item) || item == Items.ELYTRA)) return true;
         if (keepTools.get() && (stack.isDamageable() || item == Items.SHIELD
                 || item == Items.BOW || item == Items.CROSSBOW)) return true;
-        if (keepFood.get() && stack.isFood()) return true;
+        if (keepFood.get() && stack.getUseAction() == net.minecraft.util.UseAction.EAT) return true;
         if (keepBlocks.get() && item instanceof net.minecraft.item.BlockItem) return true;
         return item == Items.END_CRYSTAL || item == Items.TOTEM_OF_UNDYING
                 || item == Items.EXPERIENCE_BOTTLE || item == Items.OBSIDIAN
