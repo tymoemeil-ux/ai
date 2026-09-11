@@ -23,8 +23,8 @@ public final class DamageUtil {
     }
 
     private static final float CRYSTAL_POWER = 6.0f;
-    /** Maksymalnie 4 probki na os (vanilla liczy nawet 9 -> do 729 raycastow na wybuch!). */
-    private static final int MAX_SAMPLES = 4;
+    /** Maksymalnie 3 probki na os (vanilla liczy nawet 9 -> do 729 raycastow na wybuch!). */
+    private static final int MAX_SAMPLES = 3;
     private static final java.util.Map<Long, Float> exposureCache = new java.util.HashMap<>();
     private static int exposureCacheTick = -1;
     private static final float ANCHOR_POWER = 5.0f;

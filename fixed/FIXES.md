@@ -304,3 +304,24 @@ AntiAFK, AutoLog, AutoRespawn, Notifier, Spammer, MiddleClickFriend, Hitboxes, R
 - Render (20): ViewClip zaimplementowany, HoleESP z cache, skanowanie świata z cache.
 - Utility (17): FastPlace działa, NoRotate podłączony, XCarry oznaczony jako niedostępny.
 - HUD: lista modułów przebudowana.
+
+## Runda 16 — CrystalPvP płynne + AimAssist
+
+72. **AutoCrystal przestał ścinać grę**:
+    - raycasty w kalkulacji obrażeń: 64 → **27** na obliczenie,
+    - nowe ustawienie **Max Positions** (domyślnie 8) - sprawdza tylko najbliższe pozycje,
+      zamiast wszystkich 22,
+    - pomija pozycje dalej niż 12 bloków od celu (promień wybuchu) - zero liczenia na marne,
+    - nowe ustawienie **Calc Every** - można liczyć co 2-4 ticki dla jeszcze większej płynności.
+
+73. **KillAura płynna i szybsza**: opóźnienie domyślnie 3 ticki (było 10), próg cooldownu
+    do ustawienia (domyślnie 0.6), **Smooth Rotate** - kamera dociąga się do celu stopniowo
+    zamiast skakać i nie bije, dopóki celownik nie jest blisko.
+
+74. **NOWY MODUŁ: AimAssist** (Combat) - płynnie dociąga celownik do celu:
+    tryby Linear / Distance / Step, regulowana szybkość i maksymalny skok kąta na tick,
+    pole widzenia, opcje: tylko gracze, pomijaj znajomych, przez ściany, tylko przy
+    wciśniętym ataku, przewidywanie ruchu.
+
+75. **Timer nie powoduje już "cofania"**: dodatkowe ticki ograniczone z 10 do **3**
+    (więcej = spam pakietów i rwanie pozycji).

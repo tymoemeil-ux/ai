@@ -25,6 +25,7 @@ import com.ares.core.util.render.RenderUtil3D;
 import com.ares.core.util.timer.TickTimer;
 import com.ares.core.util.world.BlockUtil;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.LivingEntity;
@@ -57,6 +58,8 @@ public final class AutoCrystal extends Module {
     private final BoolSetting sequential = add(new BoolSetting("Sequential", "Najpierw postaw, potem zniszcz (nie w tym samym ticku)", true).group("Timing"));
     private final BoolSetting breakFirst = add(new BoolSetting("Break First", "Zniszcz krysztal przed postawieniem", true).group("Timing"));
     private final IntSetting actionsPerTick = add(new IntSetting("Actions / Tick", "Ile akcji na tick", 1, 1, 5).group("Timing"));
+    private final IntSetting maxPositions = add(new IntSetting("Max Positions", "Ile pozycji sprawdzac na tick (mniej = plynniej)", 8, 2, 24).group("Timing"));
+    private final IntSetting calcEvery = add(new IntSetting("Calc Every", "Liczenie co ile tickow (2 = dwa razy rzadziej, plynniej)", 1, 1, 4).group("Timing"));
 
     private final BoolSetting place = add(new BoolSetting("Place", "Stawiaj krysztaly", true).group("Place"));
     private final FloatSetting placeRange = add(new FloatSetting("Place Range", "Zasieg stawiania", 5f, 1f, 8f).group("Place"));
@@ -105,6 +108,7 @@ public final class AutoCrystal extends Module {
     private float lastDamage;
     private float lastSelfDamage;
     private int swingHandTicks;
+    private int calcTick;
 
     public AutoCrystal() {
         super("Auto Crystal", "Automatyczne stawianie i niszczenie krysztalow endu", ModuleCategory.COMBAT);
@@ -209,23 +213,38 @@ public final class AutoCrystal extends Module {
 
     /** Stawianie krysztalu w najlepszej pozycji. */
     private boolean placeCrystal() {
+        // ciezkie liczenie tylko co `calcEvery` tickow - dzieki temu gra nie dostaje zaciesiek
+        if (calcTick > 0) {
+            calcTick--;
+            return false;
+        }
+        calcTick = Math.max(0, calcEvery.get() - 1);
+
         BlockPos targetPos = target.getBlockPos();
         List<BlockPos> positions = CrystalUtil.placementsAround(targetPos, placeRange.get(), 2);
+
+        // bierzemy pod uwage tylko najblizsze pozycje (ogranicza liczbe raycastow)
+        positions.sort(Comparator.comparingDouble(BlockUtil::distanceToEyes));
+        int limit = Math.min(maxPositions.get(), positions.size());
 
         BlockPos best = null;
         float bestDamage = 0;
         float bestSelf = 0;
 
-        for (BlockPos pos : positions) {
+        for (int i = 0; i < limit; i++) {
+            BlockPos pos = positions.get(i);
             if (BlockUtil.isCrystalAt(pos)) continue;
             if (CrystalUtil.intersectsPlayer(pos)) continue;
+
+            Vec3d crystalPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
+            // wybuch krysztalu ma promien 12 - dalej nie zadziala, wiec nie liczymy obrazen
+            if (target.squaredDistanceTo(crystalPos) > 144.0) continue;
 
             boolean visible = !placeRaytrace.get() || BlockUtil.canSeeBlock(pos, false);
             double distance = BlockUtil.distanceToEyes(pos);
             if (!visible && distance > placeWallRange.get()) continue;
             if (distance > placeRange.get()) continue;
 
-            Vec3d crystalPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
             float damage = DamageUtil.crystal(target, crystalPos);
             float self = DamageUtil.crystal(Wrapper.player(), crystalPos);
 

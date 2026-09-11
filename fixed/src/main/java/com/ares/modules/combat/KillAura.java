@@ -36,13 +36,16 @@ public final class KillAura extends Module {
     private final BoolSetting ignoreFriends = add(new BoolSetting("Ignore Friends", "Pomijaj znajomych", true).group("Targeting"));
     private final BoolSetting ignoreNaked = add(new BoolSetting("Ignore Naked", "Pomijaj bez pancerza", false).group("Targeting"));
 
-    private final IntSetting delay = add(new IntSetting("Delay", "Opuznienie miedzy atakami (ticki)", 10, 0, 20).group("Attack"));
+    private final IntSetting delay = add(new IntSetting("Delay", "Opuznienie miedzy atakami (ticki)", 3, 0, 20).group("Attack"));
+    private final FloatSetting cooldown = add(new FloatSetting("Cooldown", "Minimalny naladowany atak (0-1)", 0.6f, 0f, 1f).group("Attack"));
     private final BoolSetting onlyWeapon = add(new BoolSetting("Only Weapon", "Atakuj tylko bronia (miecz/topor)", false).group("Attack"));
     private final ModeSetting<Weapon> weaponMode = add(new ModeSetting<>("Weapon", "Preferowana bron", Weapon.ANY).group("Attack"));
     private final BoolSetting autoSwitch = add(new BoolSetting("Auto Switch", "Sam przelaczaj na bron", false).group("Attack"));
     private final BoolSetting shieldBreaker = add(new BoolSetting("Shield Breaker", "Uzywaj topora na tarcze", true).group("Attack"));
 
     private final BoolSetting rotate = add(new BoolSetting("Rotate", "Obracaj sie na cel", true).group("Rotations"));
+    private final BoolSetting smoothRotate = add(new BoolSetting("Smooth Rotate", "Plynne obracanie zamiast skoku", true).group("Rotations"));
+    private final FloatSetting rotateSpeed = add(new FloatSetting("Rotate Speed", "Szybkosc obracania", 0.6f, 0.05f, 1f).group("Rotations"));
     private final BoolSetting render = add(new BoolSetting("Render", "Podswietlaj cel", true).group("Render"));
 
     private final TickTimer timer = new TickTimer();
@@ -82,10 +85,23 @@ public final class KillAura extends Module {
         }
 
         // czekaj na cooldown ataku (1.9+)
-        if (Wrapper.player().getAttackCooldownProgress(0.5f) < 0.9f) return;
+        if (Wrapper.player().getAttackCooldownProgress(0.5f) < cooldown.get()) return;
 
         if (rotate.get()) {
-            RotationUtil.setRotation(RotationUtil.toEntity(target, false));
+            Rotation wanted = RotationUtil.toEntity(target, false);
+            if (smoothRotate.get()) {
+                // plynnie dociagamy celownik zamiast skakac kamera
+                float yaw = Wrapper.player().getYaw();
+                float pitch = Wrapper.player().getPitch();
+                float deltaYaw = com.ares.core.util.math.MathUtil.wrapDegrees(wanted.yaw() - yaw);
+                float deltaPitch = wanted.pitch() - pitch;
+                RotationUtil.setRotation(yaw + deltaYaw * rotateSpeed.get(),
+                        pitch + deltaPitch * rotateSpeed.get());
+                // nie bijemy dopoki celownik nie jest blisko celu
+                if (Math.abs(deltaYaw) > 25f || Math.abs(deltaPitch) > 25f) return;
+            } else {
+                RotationUtil.setRotation(wanted);
+            }
         }
 
         InteractionUtil.attack(target, true);

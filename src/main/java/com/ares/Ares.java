@@ -173,6 +173,7 @@ public final class Ares {
         modules.register(new Offhand());
         modules.register(new AutoArmor());
         modules.register(new KillAura());
+        modules.register(new com.ares.modules.combat.AimAssist());
         modules.register(new Criticals());
         modules.register(new Surround());
         modules.register(new SelfTrap());
@@ -296,8 +297,8 @@ public final class Ares {
             boolean restoreRotation = noRotate != null && noRotate.isEnabled();
             if (restoreRotation) noRotate.update();
 
-            // Timer: dodatkowe ticki - twardo ograniczone, zeby nigdy nie zapetlic
-            int extra = Math.max(0, Math.min(10, (int) Math.floor(timerValue) - 1));
+            // Timer: dodatkowe ticki - twardo ograniczone (za duzo = spam pakietow i "cofanie")
+            int extra = Math.max(0, Math.min(3, (int) Math.floor(timerValue) - 1));
             for (int i = 0; i <= extra; i++) {
                 eventBus.post(new TickEvent.Client());
             }
