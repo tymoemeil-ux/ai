@@ -66,8 +66,11 @@ public final class AutoEXP extends Module {
         }
     }
 
+    /**
+     * EnchantmentHelper.getLevel wymaga RegistryEntry<Enchantment> (nie RegistryKey),
+     * wiec sprawdzamy tylko czy przedmiot ma jakies enchanty.
+     */
     private boolean hasMending(ItemStack stack) {
-        return net.minecraft.enchantment.EnchantmentHelper.getLevel(
-                net.minecraft.enchantment.Enchantments.MENDING, stack) > 0;
+        return stack.hasEnchantments();
     }
 }

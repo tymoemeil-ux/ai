@@ -29,7 +29,7 @@ public final class Spammer extends Module {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
 
         timer.increment();
-        if (timer.elapsed() < delay.get() * 1000L) return;
+        if (!timer.passed(Math.max(1, delay.get()) * 20)) return;
 
         String text = message.get();
         if (randomize.get()) text += " " + (int) (Math.random() * 10000);

@@ -27,7 +27,8 @@ public final class AntiAFK extends Module {
     @EventHandler
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck() || !PlayerUtil.isAlive()) return;
-        if (timer.elapsed() < interval.get() * 1000L) return;
+        timer.increment();
+        if (!timer.passed(Math.max(1, interval.get()) * 20)) return;
 
         if (jump.get() && Wrapper.player().isOnGround()) Wrapper.player().jump();
         if (rotate.get()) {

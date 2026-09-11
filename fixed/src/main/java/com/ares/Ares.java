@@ -16,6 +16,7 @@ import com.ares.core.notification.NotificationManager;
 import com.ares.core.target.PopCounter;
 import com.ares.core.util.Wrapper;
 import com.ares.modules.client.ClickGuiModule;
+import com.ares.modules.client.ColorsModule;
 import com.ares.modules.client.FriendsModule;
 import com.ares.modules.client.HudEditorModule;
 import com.ares.modules.client.HudModule;

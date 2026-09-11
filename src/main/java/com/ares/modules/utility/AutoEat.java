@@ -61,7 +61,7 @@ public final class AutoEat extends Module {
                 if (gapples.get()) return i;
                 continue;
             }
-            if (stack.getUseAction() == net.minecraft.util.UseAction.EAT) return i;
+            if (PlayerUtil.isFood(stack)) return i;
         }
         return -1;
     }

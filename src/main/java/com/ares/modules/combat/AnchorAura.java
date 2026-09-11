@@ -99,7 +99,7 @@ public final class AnchorAura extends Module {
         // 3. Stawiaj kolejne, jesli jest miejsce
         if (anchors.size() < maxAnchors.get()) {
             int placed = 0;
-            for (BlockPos pos : AnchorUtil.placementsAround(target.getBlockPos(), range, 1)) {
+            for (BlockPos pos : AnchorUtil.placementsAround(target.getBlockPos(), range.get(), 1)) {
                 if (placed >= placePerTick.get()) break;
                 if (anchors.contains(pos) || AnchorUtil.isAnchor(pos)) continue;
                 if (place(pos)) {

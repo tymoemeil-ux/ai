@@ -127,15 +127,6 @@ public abstract class Module {
     public void onDisable() {
     }
 
-    public void onTick(TickEvent event) {
-    }
-
-    public void onRender2D(Render2DEvent event) {
-    }
-
-    public void onRender3D(Render3DEvent event) {
-    }
-
     public void onWorldChange() {
     }
 

@@ -54,7 +54,7 @@ public final class AutoMine extends Module {
         BlockPos chosen = null;
 
         for (Direction direction : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
-            BlockPos candidate = feet ? feetPos.offset(direction) : feetPos.up().offset(direction);
+            BlockPos candidate = feet.get() ? feetPos.offset(direction) : feetPos.up().offset(direction);
             if (!com.ares.core.util.world.BlockUtil.isAir(candidate)) {
                 chosen = candidate;
                 break;

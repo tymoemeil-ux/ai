@@ -54,9 +54,10 @@ public final class PlayerUtil {
         return Wrapper.interaction() != null && Wrapper.interaction().isBreakingBlock();
     }
 
-    private static boolean isFood(ItemStack stack) {
-        return stack != null && !stack.isEmpty()
-                && stack.getUseAction() == net.minecraft.util.UseAction.EAT;
+    public static boolean isFood(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return false;
+        Enum<?> action = stack.getUseAction();
+        return action != null && "EAT".equals(action.name());
     }
 
     public static boolean hasWeakness() {

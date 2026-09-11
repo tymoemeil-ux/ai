@@ -13,12 +13,7 @@ import java.util.UUID;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 
-/**
- * Licznik popnietych totemow.
- *
- * Wykrywamy pop po naglym skoku zdrowia gracza polaczonym z efektem
- * absorpcji (totem daje absorpcje II) - dziala tez na singleplayerze.
- */
+/** Licznik popnietych totemow (wykrywa pop po skoku HP + absorpcja). */
 public final class PopCounter {
 
     private static final long EXPIRE_MS = 30_000L;
@@ -45,8 +40,7 @@ public final class PopCounter {
             Float prev = lastHealth.put(id, health);
             if (prev == null || player == Wrapper.player()) continue;
 
-            boolean absorption = player.hasStatusEffect(StatusEffects.ABSORPTION);
-            if (absorption && health > prev + 2.0f) {
+            if (player.hasStatusEffect(StatusEffects.ABSORPTION) && health > prev + 2.0f) {
                 int count = pops.getOrDefault(id, 0) + 1;
                 pops.put(id, count);
                 lastPopTime.put(id, now);
@@ -56,7 +50,6 @@ public final class PopCounter {
         lastHealth.keySet().retainAll(seen);
     }
 
-    /** Ile razy gracz popnal totem (0 jesli licznik wygasl). */
     public int pops(UUID uuid) {
         Long time = lastPopTime.get(uuid);
         if (time == null || System.currentTimeMillis() - time > EXPIRE_MS) return 0;

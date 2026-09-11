@@ -55,7 +55,7 @@ public final class AutoArmor extends Module {
             int containerSlot = containerSlotFor(slot);
 
             if (antiBreak.get() && !current.isEmpty() && isBroken(current)) {
-                if (antiBinding.get() && net.minecraft.enchantment.EnchantmentHelper.hasBindingCurse(current)) continue;
+                if (antiBinding.get() && current.hasEnchantments()) continue;
                 int empty = firstEmptySlot(inv);
                 if (empty != -1) {
                     InventoryUtil.clickSlot(syncId, containerSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.player());
@@ -70,7 +70,7 @@ public final class AutoArmor extends Module {
             ItemStack best = inv.getStack(bestSlot);
             if (!current.isEmpty() && score(current) >= score(best)) continue;
             if (antiBinding.get() && !current.isEmpty()
-                    && net.minecraft.enchantment.EnchantmentHelper.hasBindingCurse(current)) continue;
+                    && current.hasEnchantments()) continue;
 
             // kliknij najlepsza czesc -> szybki transfer na miejsce zbroi
             InventoryUtil.clickSlot(syncId, toContainerSlot(bestSlot), 0, SlotActionType.PICKUP, Wrapper.player());
@@ -143,8 +143,7 @@ public final class AutoArmor extends Module {
         else if (item == Items.LEATHER_HELMET || item == Items.LEATHER_CHESTPLATE
                 || item == Items.LEATHER_LEGGINGS || item == Items.LEATHER_BOOTS) base = 20;
         if (preferNetherite.get() && base == 100) base += 50;
-        base += net.minecraft.enchantment.EnchantmentHelper.getLevel(
-                net.minecraft.enchantment.Enchantments.PROTECTION, stack) * 3;
+        if (stack.hasEnchantments()) base += 6;
         return base;
     }
 }

@@ -58,9 +58,9 @@ public final class Criticals extends Module {
                 float yaw = Wrapper.player().getYaw();
                 float pitch = Wrapper.player().getPitch();
                 Wrapper.player().networkHandler.sendPacket(
-                        new PlayerMoveC2SPacket(x, y + 0.0625, z, yaw, pitch, false, true, false, false));
+                        new PlayerMoveC2SPacket.Full(x, y + 0.0625, z, yaw, pitch, false, false));
                 Wrapper.player().networkHandler.sendPacket(
-                        new PlayerMoveC2SPacket(x, y, z, yaw, pitch, false, true, false, false));
+                        new PlayerMoveC2SPacket.Full(x, y, z, yaw, pitch, false, false));
             }
         }
 

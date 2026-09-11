@@ -54,7 +54,7 @@ public final class XRay extends Module {
                 for (int z = -r; z <= r; z++) {
                     BlockPos pos = center.add(x, y, z);
                     if (y + center.getY() < Wrapper.world().getBottomY()) continue;
-                    if (y + center.getY() > Wrapper.world().getTopY()) continue;
+                    if (y + center.getY() > Wrapper.world().getTopYInclusive()) continue;
                     if (isOre(BlockUtil.block(pos))) ores.add(pos);
                 }
             }

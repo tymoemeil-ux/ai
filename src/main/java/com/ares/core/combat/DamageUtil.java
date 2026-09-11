@@ -142,12 +142,8 @@ public final class DamageUtil {
             ItemStack stack = entity.getEquippedStack(slot);
             if (!stack.isEmpty()) armorItems.add(stack);
         }
-        // EnchantmentHelper.getLevel wymaga RegistryEntry<Enchantment>, ktorego nie da sie
-        // bezpiecznie pobrac z RegistryKey w kazdej wersji - liczymy bez enchantow
-        // (zawyzenie obrazen = wariant bezpieczny, klient nie zrobi sobie krzywdy).
-        // EnchantmentHelper.getLevel wymaga RegistryEntry<Enchantment>, ktorego nie da sie
-        // pobrac z RegistryKey bez rejestrow - liczymy bez enchantow (zawyzenie obrazen
-        // jest wariantem bezpiecznym: klient nie zrobi sobie krzywdy).
+        // EnchantmentHelper.getLevel wymaga RegistryEntry<Enchantment> (nie RegistryKey),
+        // wiec liczymy ochrony przyblizenie - zawyzenie obrazen jest wariantem bezpiecznym.
         int blast = 0;
         int protection = 0;
         for (ItemStack stack : armorItems) {

@@ -37,7 +37,7 @@ public final class AutoRespawn extends Module {
                     server.getPlayerManager().getPlayer(Wrapper.player().getUuid());
             if (player != null) {
                 server.getPlayerManager().respawnPlayer(player, true,
-                        net.minecraft.entity.Entity.RemovalReason.DEATH);
+                        net.minecraft.entity.Entity.RemovalReason.KILLED);
             }
         }
         timer.reset();

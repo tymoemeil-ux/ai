@@ -49,3 +49,32 @@ Skopiuj zawartość `fixed/` do katalogu projektu (nadpisz pliki) i zbuduj ponow
     → każde ustawienie ma teraz kowariantną metodę `group(String)` zwracającą swój własny typ
     (BoolSetting, IntSetting, FloatSetting, DoubleSetting, ModeSetting, StringSetting,
     ColorSetting, BindSetting, ItemListSetting, NumberSetting).
+
+## Naprawione błędy (runda 3 — pełna lista 91 błędów)
+
+14. **~60 błędów `onTick/onRender3D ... attempting to assign weaker access privileges`**
+    → `Module` miał puste metody `public onTick/onRender2D/onRender3D`, a moduły definiują
+    je jako `private` (z `@EventHandler`). Puste hooki usunięte z `Module`.
+
+15. `Ares.java:247` — brak `ColorsModule` → brakował `import com.ares.modules.client.ColorsModule;`.
+
+16. `AnchorAura` / `AutoMine` — `FloatSetting`/`BoolSetting` użyte zamiast wartości
+    → `range.get()` / `feet.get()`.
+
+17. `EnchantmentHelper.hasBindingCurse` nie istnieje → `stack.hasEnchantments()` (AutoArmor).
+
+18. `Enchantments.PROTECTION / MENDING` to `RegistryKey`, a `getLevel` chce `RegistryEntry`
+    → AutoArmor i AutoEXP używają `stack.hasEnchantments()` (przybliżenie).
+
+19. `PlayerMoveC2SPacket` jest abstrakcyjna → `new PlayerMoveC2SPacket.Full(x, y, z, yaw, pitch, onGround, horizontalCollision)` (Criticals).
+
+20. `ClientWorld.setTimeOfDay(long)` — jawne rzutowanie na `ClientWorld` + `long` (TimeChanger).
+
+21. `World.getTopY()` bez argumentów nie istnieje → `getTopYInclusive()` (XRay).
+
+22. `Entity.RemovalReason.DEATH` nie istnieje → `RemovalReason.KILLED` (AutoRespawn).
+
+23. `TickTimer.elapsed()` nie istnieje → `timer.increment()` + `timer.passed(ticks)` (AntiAFK, Spammer).
+
+24. `net.minecraft.util.UseAction` nie istnieje w 1.21.8 → `PlayerUtil.isFood()` sprawdza
+    `stack.getUseAction().name().equals("EAT")` (PlayerUtil, AutoEat, InventoryCleaner).

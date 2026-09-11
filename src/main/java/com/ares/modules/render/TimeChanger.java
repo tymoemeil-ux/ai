@@ -21,7 +21,8 @@ public final class TimeChanger extends Module {
     @EventHandler
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck()) return;
-        Wrapper.world().setTimeOfDay(time.get());
+        long value = time.get();
+        ((net.minecraft.client.world.ClientWorld) Wrapper.world()).setTimeOfDay(value);
     }
 
     public int time() {
