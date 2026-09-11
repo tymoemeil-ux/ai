@@ -18,8 +18,26 @@ public final class ElytraFly extends Module {
     private final BoolSetting autoStart = add(new BoolSetting("Auto Start", "Sam startuj przy skoku", true).group("General"));
     private final BoolSetting infinite = add(new BoolSetting("Infinite", "Bez konca utraty wytrzymalosci", true).group("General"));
 
+    /** Czy to MY wcisnelismy skok (zeby potem go na pewno puscic). */
+    private boolean jumpPressedByUs;
+
     public ElytraFly() {
         super("Elytra Fly", "Lepsze sterowanie elytra", ModuleCategory.MOVEMENT);
+    }
+
+    /** Puszcza klawisz skoku, ale tylko ten ktory sami wcisnelismy. */
+    private void releaseJump() {
+        if (!jumpPressedByUs) return;
+        jumpPressedByUs = false;
+        if (Wrapper.mc() != null && Wrapper.mc().options != null) {
+            Wrapper.mc().options.jumpKey.setPressed(false);
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        // bez tego klawisz skoku zostawal wcisniety po wylaczeniu modulu
+        releaseJump();
     }
 
     @EventHandler
@@ -30,9 +48,13 @@ public final class ElytraFly extends Module {
         if (!Wrapper.player().isGliding()) {
             if (autoStart.get() && !Wrapper.player().isOnGround() && Wrapper.player().getVelocity().y < -0.1) {
                 Wrapper.mc().options.jumpKey.setPressed(true);
+                jumpPressedByUs = true;
             }
             return;
         }
+
+        // juz szybujemy - puszczamy sztuczny skok, zeby nie zostal wcisniety na stale
+        releaseJump();
 
         if (infinite.get()) {
             net.minecraft.item.ItemStack elytra = Wrapper.player().getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST);

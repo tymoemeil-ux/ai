@@ -247,3 +247,17 @@ Offhand, AutoArmor (sloty 5-8 zbroi - poprawne), Criticals (3 tryby: Jump / Mini
 Packet), AutoAnvil, AutoWeb, AutoTrap, Burrow, AnchorAura, AutoAnchor, AutoCity, HoleFiller,
 AutoMine, AutoEXP, AutoGap oraz helpery: TickTimer, TargetUtil, AnchorUtil, DamageUtil,
 CrystalUtil, BlockUtil, InventoryUtil, InteractionUtil, RotationUtil.
+
+## Runda 12 — moduły Movement (przejrzane wszystkie 16)
+
+Przejrzane: AntiVoid, AutoJump, ElytraFly, Fly, InventoryMove, Jesus, NoFall, NoPush,
+NoSlow, SafeWalk, Scaffold, Speed, Sprint, Step, Timer, Velocity - wszystkie mają realną logikę.
+
+64. **ElytraFly - klawisz skoku zostawał wciśnięty na stałe** (moduł wciskał `jumpKey`,
+    żeby wystartować, i nigdy go nie puszczał → po wyłączeniu gracz dalej skakał).
+    Dodane `releaseJump()` + sprzątanie w `onDisable`, z własną flagą
+    `jumpPressedByUs` (żeby nie kasować prawdziwego wciśnięcia klawisza przez gracza).
+
+Potwierdzone działanie: Step (omija brak setStepHeight w 1.21.8 - podbija prędkością przy
+kolizji), Fly (Creative/Vanilla/Glide + sprzątanie abilities), Speed, Jesus, Velocity
+(redukcja knockbacku), Scaffold (stawia pod nogami), NoFall (wiadro wody), SafeWalk.
