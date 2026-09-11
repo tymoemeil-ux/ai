@@ -5,8 +5,8 @@
   "minVersion": "0.8",
   "client": [
     "InGameHudMixin",
-    "EntityMixin",
-    "ClientPlayerInteractionManagerMixin"
+    "PlayerEntityMixin",
+    "EntityMixin"
   ],
   "injectors": {
     "defaultRequire": 0
