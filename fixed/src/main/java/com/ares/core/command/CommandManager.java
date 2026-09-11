@@ -71,13 +71,20 @@ public final class CommandManager {
                                                     })))))
                     .then(ClientCommandManager.literal("bind")
                             .then(ClientCommandManager.argument("module", StringArgumentType.word())
-                                    .then(ClientCommandManager.argument("key", IntegerArgumentType.integer())
+                                    .then(ClientCommandManager.argument("key", StringArgumentType.word())
                                             .executes(context -> {
                                                 Module module = Ares.get().modules().get(
                                                         StringArgumentType.getString(context, "module").replace(" ", ""));
                                                 if (module == null) return 0;
-                                                module.setBind(IntegerArgumentType.getInteger(context, "key"));
-                                                send("Bind " + module.name() + " = " + module.bind());
+                                                String raw = StringArgumentType.getString(context, "key");
+                                                int key = parseKey(raw);
+                                                if (key == -1) {
+                                                    send("Nieznany klawisz: " + raw
+                                                            + " (np. r, g, right_shift, key.mouse.0, 82)");
+                                                    return 0;
+                                                }
+                                                module.setBind(key);
+                                                send("Bind " + module.name() + " = " + raw + " (" + key + ")");
                                                 Ares.get().config().markDirty();
                                                 return 1;
                                             }))))
@@ -183,5 +190,34 @@ public final class CommandManager {
 
     public static FabricClientCommandSource source(FabricClientCommandSource source) {
         return source;
+    }
+
+    /**
+     * Zamienia nazwe klawisza na kod: liczba (82), litera/klawisz (r, right_shift, left_control),
+     * przycisk myszy (mouse.0 / key.mouse.0). Zwraca -1 gdy sie nie udalo.
+     */
+    private static int parseKey(String raw) {
+        if (raw == null || raw.isEmpty()) return -1;
+        try {
+            return Integer.parseInt(raw);
+        } catch (NumberFormatException ignored) {
+            // ponizej nazwa klawisza
+        }
+        String name = raw.toLowerCase(java.util.Locale.ROOT).replace('-', '_');
+        if (name.startsWith("mouse") || name.startsWith("key.mouse")) {
+            String digits = name.replaceAll("\\D+", "");
+            int button = digits.isEmpty() ? 0 : Integer.parseInt(digits);
+            return -(100 + button);
+        }
+        for (String prefix : new String[]{"", "key.", "key.keyboard."}) {
+            try {
+                net.minecraft.client.util.InputUtil.Key key =
+                        net.minecraft.client.util.InputUtil.fromTranslationKey(prefix + name);
+                if (key != null && key.getCode() != 0) return key.getCode();
+            } catch (Exception ignored) {
+                // probujemy kolejny prefix
+            }
+        }
+        return -1;
     }
 }

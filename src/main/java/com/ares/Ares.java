@@ -276,7 +276,7 @@ public final class Ares {
 
         for (Module module : modules.all()) {
             int bind = module.bind();
-            if (bind < 0) continue;
+            if (bind == -1) continue; // -1 = brak bindu, <= -100 = przycisk myszy
 
             boolean pressed;
             if (bind >= 0) {

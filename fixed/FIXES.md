@@ -78,3 +78,30 @@ Skopiuj zawartość `fixed/` do katalogu projektu (nadpisz pliki) i zbuduj ponow
 
 24. `net.minecraft.util.UseAction` nie istnieje w 1.21.8 → `PlayerUtil.isFood()` sprawdza
     `stack.getUseAction().name().equals("EAT")` (PlayerUtil, AutoEat, InventoryCleaner).
+
+## Naprawione — runda 4 (mod sie juz laduje, ale NIC nie dzialalo)
+
+Przyczyna „żadna komenda ani GUI nie działa” była w runtime, nie w kompilacji:
+
+25. **Moduły nie dostawały eventów** — `ModuleManager.register()` tylko wrzucał moduł do mapy.
+    Dodano `Ares.get().eventBus().register(module)` przy rejestracji.
+
+26. **Eventy pochodne nie trafiały do słuchaczy** — `EventBus.post()` patrzył tylko na
+    `event.getClass()`, a `AresMod` publikuje `TickEvent.Client`, moduły nasłuchują `TickEvent`.
+    `post()` zbiera teraz listenery z całej hierarchii klas.
+
+27. **Bindy myszy były ignorowane** — w `Ares.handleKeybinds()` było `if (bind < 0) continue;`,
+    przez co przyciski myszy (kodowane jako <= -100) nigdy nie działały. Teraz: `-1` = brak bindu.
+
+28. **Nic nie publikowało `Render3DEvent`** — ESP, tracery, nametagi, chams, boxy itd. były martwe.
+    W `AresMod` dodano `WorldRenderEvents.LAST` (Fabric API) → `postRender3D(...)`.
+
+29. **`/ares bind <modul> <klawisz>` wymagało liczby** — teraz przyjmuje nazwy:
+    `/ares bind killaura r`, `/ares bind esp right_shift`, `/ares bind offhand key.mouse.0`,
+    albo kod liczbowy (`82`).
+
+30. Nowe mixiny (wszystkie cele zweryfikowane w mapowaniach 1.21.8):
+    - `CameraMixin` → Freecam podmienia pozycję/rotację kamery (`Camera.update`, TAIL),
+    - `InGameHudMixin` → No Render: `renderStatusEffectOverlay` (ikony efektów)
+      i `renderOverlay` (ogień / dynia po ścieżce tekstury),
+    - `BossBarHudMixin` → No Render: pasek bossa.

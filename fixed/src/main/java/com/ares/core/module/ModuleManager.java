@@ -15,6 +15,8 @@ public final class ModuleManager {
     public void register(Module module) {
         byClass.put(module.getClass(), module);
         byName.put(module.name().toLowerCase(), module);
+        // modul musi byc sluchaczem eventow, inaczej jego @EventHandler nigdy sie nie odpali
+        com.ares.Ares.get().eventBus().register(module);
     }
 
     public Collection<Module> all() {
