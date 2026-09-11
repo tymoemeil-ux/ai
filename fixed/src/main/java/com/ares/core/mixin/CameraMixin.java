@@ -32,6 +32,8 @@ public final class CameraMixin {
     private void onUpdate(BlockView area, Entity focusedEntity, boolean thirdPerson,
                           boolean inverseView, float tickDelta, CallbackInfo info) {
         try {
+            applyViewClip(focusedEntity, thirdPerson);
+
             Freecam freecam = Ares.get().modules().get(Freecam.class);
             if (freecam == null || !freecam.active() || !Wrapper.nullCheck()) return;
 
@@ -42,5 +44,22 @@ public final class CameraMixin {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    /**
+     * ViewClip: kamera ignoruje kolizje ze scianami.
+     * Vanilla przesuwa kamere do przodu gdy cos zaslania widok - my cofamy ja z powrotem
+     * na pelna odleglosc (4 bloki w trzeciej osobie, 0 w pierwszej).
+     */
+    private void applyViewClip(Entity focused, boolean thirdPerson) {
+        com.ares.modules.render.ViewClip viewClip =
+                Ares.get().modules().get(com.ares.modules.render.ViewClip.class);
+        if (viewClip == null || !viewClip.isEnabled()) return;
+        if (focused == null) return;
+
+        double distance = (thirdPerson || viewClip.thirdPerson()) ? 4.0 : 0.0;
+        Vec3d eye = focused.getEyePos();
+        Vec3d direction = Vec3d.fromPolar(focused.getPitch(), focused.getYaw());
+        setPos(eye.subtract(direction.multiply(distance)));
     }
 }

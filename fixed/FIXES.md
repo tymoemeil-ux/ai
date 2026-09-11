@@ -261,3 +261,16 @@ NoSlow, SafeWalk, Scaffold, Speed, Sprint, Step, Timer, Velocity - wszystkie maj
 Potwierdzone działanie: Step (omija brak setStepHeight w 1.21.8 - podbija prędkością przy
 kolizji), Fly (Creative/Vanilla/Glide + sprzątanie abilities), Speed, Jesus, Velocity
 (redukcja knockbacku), Scaffold (stawia pod nogami), NoFall (wiadro wody), SafeWalk.
+
+## Runda 13 — moduły Render
+
+65. **ViewClip był pustakiem** (tylko ustawienie, zero logiki). Teraz działa naprawdę:
+    `CameraMixin` cofa kamerę na pełną odległość (vanilla przesuwa ją do przodu przy
+    kolizji), a moduł przełącza widok na trzecią osobę i wraca do pierwszej po wyłączeniu.
+    Stałe enuma wybierane przez `isFirstPerson()`/`isFrontView()` (nazwy stałych w
+    mapowaniach 1.21.8 nie są pewne).
+
+66. **HoleESP wycinał klatki**: `HoleUtil.holesInRange` liczył ~5 tys. pozycji (kiladziesiąt
+    tysięcy odczytów bloków) przy KAŻDEJ klatce. Wynik jest teraz cache'owany na tick.
+
+67. Wszystkie moduły renderujące korzystają z cache bytów (bez skanowania świata co klatkę).

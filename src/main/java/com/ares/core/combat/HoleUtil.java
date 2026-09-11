@@ -60,7 +60,22 @@ public final class HoleUtil {
     }
 
     /** Wszystkie dziury w promieniu (do HoleESP / HoleFiller). */
+    private static int holeCacheTick = -1;
+    private static BlockPos holeCacheCenter;
+    private static int holeCacheRange = -1;
+    private static List<Hole> holeCache = new ArrayList<>();
+
+    /**
+     * Dziury w zasiegu. Wynik liczony RAZ NA TICK (cache) - moduly renderujace (HoleESP)
+     * wolaly to przy kazdej klatce, co przy zasiegu 8 oznaczalo ~5 tys. sprawdzanych
+     * pozycji i kilkadziesiat tysiecy odczytow blokow na klatke.
+     */
     public static List<Hole> holesInRange(BlockPos center, int range) {
+        int tick = com.ares.Ares.get().ticks();
+        if (tick == holeCacheTick && range == holeCacheRange && center.equals(holeCacheCenter)) {
+            return holeCache;
+        }
+
         List<Hole> holes = new ArrayList<>();
         for (int x = center.getX() - range; x <= center.getX() + range; x++) {
             for (int y = center.getY() - range; y <= center.getY() + range; y++) {
@@ -73,6 +88,10 @@ public final class HoleUtil {
                 }
             }
         }
+        holeCacheTick = tick;
+        holeCacheRange = range;
+        holeCacheCenter = center;
+        holeCache = holes;
         return holes;
     }
 
