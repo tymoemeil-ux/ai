@@ -22,7 +22,7 @@ public final class TimeChanger extends Module {
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck()) return;
         long value = time.get();
-        ((net.minecraft.client.world.ClientWorld) Wrapper.world()).setTimeOfDay(value);
+        setTimeOfDay(Wrapper.world(), value);
     }
 
     public int time() {
@@ -36,5 +36,23 @@ public final class TimeChanger extends Module {
     @Override
     public String info() {
         return String.valueOf(time.get());
+    }
+
+    /**
+     * ClientWorld.setTimeOfDay(long) nie jest publiczne, wiec wolamy je po nazwie.
+     * Probujemy nazwy mapowanej i obfuskowanej (dziala tez w buildzie produkcyjnym).
+     */
+    private static void setTimeOfDay(Object world, long value) {
+        if (world == null) return;
+        for (String name : new String[]{"setTimeOfDay", "method_165"}) {
+            try {
+                java.lang.reflect.Method method = world.getClass().getDeclaredMethod(name, long.class);
+                method.setAccessible(true);
+                method.invoke(world, value);
+                return;
+            } catch (Exception ignored) {
+                // probujemy kolejna nazwe
+            }
+        }
     }
 }

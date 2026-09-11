@@ -105,3 +105,17 @@ Przyczyna „żadna komenda ani GUI nie działa” była w runtime, nie w kompil
     - `InGameHudMixin` → No Render: `renderStatusEffectOverlay` (ikony efektów)
       i `renderOverlay` (ogień / dynia po ścieżce tekstury),
     - `BossBarHudMixin` → No Render: pasek bossa.
+
+## Naprawione — runda 5 (ostatnie 4 błędy + HUD)
+
+31. `RenderTickCounter.getTickDelta(boolean)` nie istnieje → `getTickProgress(true)` (AresMod).
+
+32. `Camera.setPos/setRotation` są `protected` → w `CameraMixin` dodano deklaracje `@Shadow`,
+    Mixin podmienia je na prawdziwe metody (Freecam podmienia kamerę).
+
+33. `ClientWorld.setTimeOfDay(long)` nie jest publiczne → TimeChanger woła je przez refleksję
+    po nazwie (`setTimeOfDay`, a w buildzie produkcyjnym `method_165`) — zero błędów kompilacji.
+
+34. **HUD uciekał do rogu**: `HudManager.render()` dociskał każdy element do krawędzi ekranu
+    i zapisywał tę pozycję (`element.setPosition`), przez co ustawienia z edytora HUDu
+    były niszczone przy każdej klatce. Teraz elementy rysują się tam, gdzie są ustawione.

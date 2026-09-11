@@ -50,9 +50,10 @@ public final class HudManager {
         com.ares.Ares.get().notifications().update();
         for (HudElement element : elements) {
             if (!element.enabled()) continue;
-            double x = Math.max(0, Math.min(width - element.width(), element.x()));
-            double y = Math.max(0, Math.min(height - element.height(), element.y()));
-            element.setPosition(x, y);
+            // Uwaga: nie nadpisujemy pozycji elementu (kiedys byla tu "klamrowana" do ekranu,
+            // przez co elementy uciekaly w lewy gorny rog i psuly zapisany uklad).
+            double x = element.x();
+            double y = element.y();
             com.ares.core.util.render.RenderUtil2D.scaled(context, x, y, element.scale(), () -> {
                 element.drawBackground(context);
                 element.render(context, tickDelta);

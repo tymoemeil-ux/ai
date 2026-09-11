@@ -33,7 +33,7 @@ public final class AresMod implements ClientModInitializer {
             VertexConsumerProvider consumers = context.consumers();
             Camera camera = context.camera();
             if (matrices == null || consumers == null || camera == null) return;
-            float tickDelta = context.tickCounter().getTickDelta(true);
+            float tickDelta = context.tickCounter().getTickProgress(true);
             Ares.get().postRender3D(new Render3DEvent(matrices, consumers, camera, tickDelta, camera.getPos()));
         });
 
