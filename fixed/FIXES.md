@@ -274,3 +274,18 @@ kolizji), Fly (Creative/Vanilla/Glide + sprzątanie abilities), Speed, Jesus, Ve
     tysięcy odczytów bloków) przy KAŻDEJ klatce. Wynik jest teraz cache'owany na tick.
 
 67. Wszystkie moduły renderujące korzystają z cache bytów (bez skanowania świata co klatkę).
+
+## Runda 14 — moduły Utility
+
+68. **FastPlace działa naprawdę** (wcześniej miał tylko ustawienia): co tick zeruje
+    `MinecraftClient.itemUseCooldown`, czyli opóźnienie przed kolejnym postawieniem/użyciem.
+
+69. **NoRotate podłączony** (metody `update()`/`restore()` istniały, ale nikt ich nie wołał):
+    `Ares.tick()` zapamiętuje kąty przed akcjami modułów i przywraca je po nich.
+
+70. **XCarry był pustą klasą**. Pełna implementacja wymaga przechwytywania pakietu
+    zamykającego ekwipunek (inaczej serwer wyrzuca itemy z craftingowych slotów), więc
+    moduł jest oznaczony jako ukryty zamiast udawać, że działa.
+
+Przejrzane i działające: ChestStealer, AutoTool, InventoryCleaner, HotbarRefill, AutoEat,
+AntiAFK, AutoLog, AutoRespawn, Notifier, Spammer, MiddleClickFriend, Hitboxes, Reach.

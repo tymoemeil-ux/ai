@@ -1,5 +1,9 @@
 package com.ares.modules.utility;
 
+import com.ares.core.event.EventHandler;
+import com.ares.core.event.events.TickEvent;
+import com.ares.core.util.Wrapper;
+
 import com.ares.core.module.Module;
 import com.ares.core.module.ModuleCategory;
 import com.ares.core.setting.BoolSetting;
@@ -13,6 +17,16 @@ public final class FastPlace extends Module {
 
     public FastPlace() {
         super("Fast Place", "Usuwa opuznienia przy stawianiu", ModuleCategory.UTILITY);
+    }
+
+    /**
+     * Minecraft trzyma licznik `itemUseCooldown` - dopoki jest > 0, nie mozna znowu
+     * postawic/uzyc itemu. Zerujemy go co tick, wiec stawianie jest natychmiastowe.
+     */
+    @EventHandler
+    private void onTick(TickEvent event) {
+        if (!Wrapper.nullCheck()) return;
+        if (Wrapper.mc().itemUseCooldown > 0) Wrapper.mc().itemUseCooldown = 0;
     }
 
     public boolean crystals() {

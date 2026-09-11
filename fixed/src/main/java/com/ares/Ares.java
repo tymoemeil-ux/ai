@@ -291,11 +291,18 @@ public final class Ares {
         handleKeybinds();
 
         if (Wrapper.nullCheck()) {
+            // NoRotate: zapamietaj katy, moduly moga je zmienic podczas akcji
+            com.ares.modules.utility.NoRotate noRotate = modules.get(com.ares.modules.utility.NoRotate.class);
+            boolean restoreRotation = noRotate != null && noRotate.isEnabled();
+            if (restoreRotation) noRotate.update();
+
             // Timer: dodatkowe ticki - twardo ograniczone, zeby nigdy nie zapetlic
             int extra = Math.max(0, Math.min(10, (int) Math.floor(timerValue) - 1));
             for (int i = 0; i <= extra; i++) {
                 eventBus.post(new TickEvent.Client());
             }
+
+            if (restoreRotation) noRotate.restore();
         }
 
         if (config.isDirty() && ticks % 100 == 0) save();
