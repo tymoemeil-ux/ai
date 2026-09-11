@@ -48,6 +48,17 @@ public final class EntityUtil {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Wszystkie byty w swiecie (Z CACHE - odswiezane raz na tick).
+     * Uzywaj zamiast Wrapper.world().getEntities() - tamto skanuje swiat za kazdym razem,
+     * co przy modulach renderujacych (60 razy na sekunde) wycinalo klatki.
+     * Lista jest tylko do odczytu.
+     */
+    public static List<Entity> all() {
+        refresh();
+        return cachedAll;
+    }
+
     public static <T extends Entity> List<T> getEntities(Class<T> type, double range) {
         refresh();
         List<T> result = new ArrayList<>();

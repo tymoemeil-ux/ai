@@ -27,7 +27,7 @@ public final class ItemESP extends Module {
     private void onRender3D(Render3DEvent event) {
         if (!Wrapper.nullCheck()) return;
 
-        for (net.minecraft.entity.Entity entity : Wrapper.world().getEntities()) {
+        for (net.minecraft.entity.Entity entity : com.ares.core.util.world.EntityUtil.all()) {
             if (!(entity instanceof ItemEntity item)) continue;
             if (entity.squaredDistanceTo(Wrapper.player()) > range.get() * range.get()) continue;
 

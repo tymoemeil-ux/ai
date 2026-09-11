@@ -38,7 +38,7 @@ public final class Nametags extends Module {
         MatrixStack matrices = event.matrices();
         VertexConsumerProvider consumers = event.consumers();
 
-        for (net.minecraft.entity.Entity entity : Wrapper.world().getEntities()) {
+        for (net.minecraft.entity.Entity entity : com.ares.core.util.world.EntityUtil.all()) {
             if (!(entity instanceof PlayerEntity target) || entity == player) continue;
             if (!target.isAlive()) continue;
             if (target.squaredDistanceTo(player) > range.get() * range.get()) continue;

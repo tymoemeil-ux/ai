@@ -75,7 +75,7 @@ public final class Criticals extends Module {
     private LivingEntity nearestTarget() {
         double best = Double.MAX_VALUE;
         LivingEntity found = null;
-        for (net.minecraft.entity.Entity entity : Wrapper.world().getEntities()) {
+        for (net.minecraft.entity.Entity entity : com.ares.core.util.world.EntityUtil.all()) {
             if (!(entity instanceof LivingEntity living)) continue;
             if (living == Wrapper.player() || !living.isAlive()) continue;
             double distance = living.squaredDistanceTo(Wrapper.player());

@@ -32,7 +32,7 @@ public final class Tracers extends Module {
 
         Vec3d start = new Vec3d(0, Wrapper.player().getStandingEyeHeight(), 0);
 
-        for (net.minecraft.entity.Entity entity : Wrapper.world().getEntities()) {
+        for (net.minecraft.entity.Entity entity : com.ares.core.util.world.EntityUtil.all()) {
             if (!(entity instanceof LivingEntity living)) continue;
             if (living == Wrapper.player() || !living.isAlive()) continue;
             if (living.squaredDistanceTo(Wrapper.player()) > range.get() * range.get()) continue;

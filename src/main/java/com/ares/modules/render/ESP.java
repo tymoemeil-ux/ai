@@ -40,7 +40,7 @@ public final class ESP extends Module {
     private void onRender3D(Render3DEvent event) {
         if (!Wrapper.nullCheck()) return;
 
-        for (Entity entity : Wrapper.world().getEntities()) {
+        for (Entity entity : com.ares.core.util.world.EntityUtil.all()) {
             if (!(entity instanceof LivingEntity living)) continue;
             if (living == Wrapper.player()) continue;
             if (!living.isAlive()) continue;

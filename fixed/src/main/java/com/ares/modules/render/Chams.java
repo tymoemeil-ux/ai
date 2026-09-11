@@ -29,7 +29,7 @@ public final class Chams extends Module {
     private void onRender3D(Render3DEvent event) {
         if (!Wrapper.nullCheck()) return;
 
-        for (net.minecraft.entity.Entity entity : Wrapper.world().getEntities()) {
+        for (net.minecraft.entity.Entity entity : com.ares.core.util.world.EntityUtil.all()) {
             if (!(entity instanceof LivingEntity living)) continue;
             if (living == Wrapper.player() || !living.isAlive()) continue;
             if (playersOnly.get() && !(living instanceof net.minecraft.entity.player.PlayerEntity)) continue;

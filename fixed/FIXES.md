@@ -233,3 +233,17 @@ Caused by: java.lang.StackOverflowError
     + powiadomienie), plus podpowiedź sterowania.
 
 61. Komunikat „Brak wyników” gdy wyszukiwarka nic nie znajdzie.
+
+## Runda 11 — wszystkie moduły: kolejny etap optymalizacji
+
+62. **Moduły renderujące skanowały świat na własną rękę** - Nametags, ESP, Chams, Tracers,
+    ItemESP i Criticals wywoływały `world.getEntities()` przy KAŻDEJ klatce (60+ razy/s).
+    Teraz korzystają z cache `EntityUtil.all()` (odświeżanego raz na tick).
+
+63. `EntityUtil.all()` - publiczny dostęp do cache'owanej listy bytów.
+
+Przejrzane i potwierdzone jako działające: AutoCrystal, KillAura, Surround, AutoTotem,
+Offhand, AutoArmor (sloty 5-8 zbroi - poprawne), Criticals (3 tryby: Jump / Mini Jump /
+Packet), AutoAnvil, AutoWeb, AutoTrap, Burrow, AnchorAura, AutoAnchor, AutoCity, HoleFiller,
+AutoMine, AutoEXP, AutoGap oraz helpery: TickTimer, TargetUtil, AnchorUtil, DamageUtil,
+CrystalUtil, BlockUtil, InventoryUtil, InteractionUtil, RotationUtil.
