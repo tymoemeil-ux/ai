@@ -289,3 +289,18 @@ kolizji), Fly (Creative/Vanilla/Glide + sprzątanie abilities), Speed, Jesus, Ve
 
 Przejrzane i działające: ChestStealer, AutoTool, InventoryCleaner, HotbarRefill, AutoEat,
 AntiAFK, AutoLog, AutoRespawn, Notifier, Spammer, MiddleClickFriend, Hitboxes, Reach.
+
+## Runda 15 — przebudowa HUD
+
+71. **ArrayList (lista modułów) od nowa**:
+    - płynne wysuwanie/chowanie każdej pozycji (animacja zamiast skakania),
+    - kolory według kategorii (Combat czerwony, Movement cyan, Render fiolet,
+      Utility żółty, Client zielony, HUD niebieski) - spójne z ClickGUI,
+    - pasek i tło znikają razem z napisem (alpha powiązana z animacją),
+    - sortowanie po szerokości z uwzględnieniem dopisku (np. wartości ustawienia).
+
+## Podsumowanie przejścia po wszystkich modułach (rundy 12-15)
+- Movement (16): ElytraFly naprawiony, reszta potwierdzona.
+- Render (20): ViewClip zaimplementowany, HoleESP z cache, skanowanie świata z cache.
+- Utility (17): FastPlace działa, NoRotate podłączony, XCarry oznaczony jako niedostępny.
+- HUD: lista modułów przebudowana.

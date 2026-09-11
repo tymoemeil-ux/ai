@@ -37,9 +37,12 @@ public final class HudElements {
         }
     }
 
-    /** Lista aktywnych modulow posortowana po szerokosci. */
+    /** Lista aktywnych modulow posortowana po szerokosci, z animacja wysuwania. */
     public static class ModuleList extends HudElement {
         private boolean right;
+
+        /** Animacja kazdego modulu (0 = schowany, 1 = widoczny). */
+        private final java.util.Map<Module, com.ares.core.gui.widgets.Animation> animations = new java.util.HashMap<>();
 
         public ModuleList(double x, double y) {
             super("ArrayList", x, y);
@@ -49,32 +52,65 @@ public final class HudElements {
             this.right = right;
         }
 
+        private int categoryColor(Module module) {
+            return switch (module.category()) {
+                case COMBAT -> 0xFFFF4D6D;
+                case MOVEMENT -> 0xFF22D3EE;
+                case RENDER -> 0xFF7C5CFF;
+                case UTILITY -> 0xFFFFC857;
+                case CLIENT -> 0xFF22C55E;
+                case HUD -> 0xFF60A5FA;
+            };
+        }
+
         @Override
         public void render(DrawContext context, float tickDelta) {
-            List<Module> active = new ArrayList<>();
+            // moduly aktywne + te ktore jeszcze sie chowaja (dzieki temu znikaja plynnie)
+            List<Module> modules = new ArrayList<>();
             for (Module module : Ares.get().modules().all()) {
-                if (module.isVisibleInArray()) active.add(module);
+                boolean visible = module.isVisibleInArray();
+                com.ares.core.gui.widgets.Animation animation = animations.computeIfAbsent(
+                        module, k -> new com.ares.core.gui.widgets.Animation(visible ? 1 : 0));
+                animation.update(visible, 0.18);
+                if (animation.value() > 0.02 || visible) modules.add(module);
             }
-            active.sort(Comparator.comparingInt((Module m) -> -RenderUtil2D.textWidth(m.name())).thenComparing(Module::name));
+            modules.sort(Comparator.comparingInt((Module m) -> -RenderUtil2D.textWidth(m.name() + infoText(m)))
+                    .thenComparing(Module::name));
 
             int screenWidth = context.getScaledWindowWidth();
             double maxWidth = 0;
             int index = 0;
-            for (Module module : active) {
-                String text = module.name() + (module.info() == null ? "" : " §7" + module.info());
+
+            for (Module module : modules) {
+                com.ares.core.gui.widgets.Animation animation = animations.get(module);
+                double progress = animation == null ? 1 : animation.value();
+                if (progress <= 0.02) {
+                    continue;
+                }
+
+                String text = module.name() + infoText(module);
                 double textWidth = RenderUtil2D.textWidth(text);
                 double drawX = right ? screenWidth - textWidth - 6 : x;
                 double drawY = y + index * 12;
-                int color = ColorUtil.rainbow(module.colorIndex() * 40L, 0.7f, 1f);
+                int color = categoryColor(module);
 
-                RenderUtil2D.rect(context, drawX - 2, drawY, textWidth + 4, 11, 0x70080810);
-                RenderUtil2D.rect(context, drawX - 3, drawY, 1, 11, color);
-                RenderUtil2D.text(context, text, drawX, drawY + 2, color, true);
+                // pasek po lewej + delikatne tlo pod napisem
+                RenderUtil2D.rect(context, drawX - 2, drawY, textWidth + 4, 11,
+                        com.ares.core.util.math.ColorUtil.withAlpha(0xFF080810, (int) (120 * progress)));
+                RenderUtil2D.rect(context, drawX - 3, drawY, 1, 11,
+                        com.ares.core.util.math.ColorUtil.withAlpha(color, (int) (255 * progress)));
+                RenderUtil2D.text(context, text, drawX, drawY + 2,
+                        com.ares.core.util.math.ColorUtil.withAlpha(color, (int) (255 * progress)), true);
 
                 maxWidth = Math.max(maxWidth, textWidth + 4);
                 index++;
             }
-            setSize(maxWidth, Math.max(12, active.size() * 12));
+            setSize(maxWidth, Math.max(12, index * 12));
+        }
+
+        private String infoText(Module module) {
+            String info = module.info();
+            return info == null ? "" : " §7" + info;
         }
     }
 
