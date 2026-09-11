@@ -8,7 +8,8 @@
     "PlayerEntityMixin",
     "EntityMixin",
     "BossBarHudMixin",
-    "CameraMixin"
+    "CameraMixin",
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 0

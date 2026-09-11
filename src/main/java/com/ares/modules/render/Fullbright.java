@@ -28,7 +28,10 @@ public final class Fullbright extends Module {
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck()) return;
         double gamma = Math.min(1.0, level.get() / 15.0);
-        OptionUtil.setValue(Wrapper.mc().options.getGamma(), gamma);
+        // ustawiamy tylko gdy wartosc sie zmieni - bez zbednego pisania co tick
+        if (Math.abs(OptionUtil.getValue(Wrapper.mc().options.getGamma()) - gamma) > 0.001) {
+            OptionUtil.setValue(Wrapper.mc().options.getGamma(), gamma);
+        }
     }
 
     @Override

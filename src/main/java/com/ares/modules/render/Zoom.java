@@ -5,10 +5,13 @@ import com.ares.core.event.events.TickEvent;
 import com.ares.core.module.Module;
 import com.ares.core.module.ModuleCategory;
 import com.ares.core.setting.FloatSetting;
-import com.ares.core.util.OptionUtil;
 import com.ares.core.util.Wrapper;
 
-/** Zoom - przyblizenie widoku. */
+/**
+ * Zoom - przyblizenie widoku.
+ * Nie zapisujemy juz FOV do opcji Minecrafta (robil to mixin GameRendererMixin),
+ * wiec mozna zejsc ponizej 30 bez spamu "Illegal option value".
+ */
 public final class Zoom extends Module {
 
     private final FloatSetting fov = add(new FloatSetting("FOV", "Docelowy FOV podczas zoomu", 15f, 5f, 70f).group("General"));
@@ -39,21 +42,19 @@ public final class Zoom extends Module {
     @EventHandler
     private void onTick(TickEvent event) {
         if (!Wrapper.nullCheck()) return;
-        double target = fov.get();
+        float target = fov.get();
+        if (current <= 1f) current = 70f; // start od domyslnego FOV
         current = (float) (current + (target - current) * smooth.get() * 0.35);
-        OptionUtil.setValue(Wrapper.mc().options.getFov(), current);
     }
 
     @Override
     public void onEnable() {
-        current = Wrapper.nullCheck()
-                ? (float) OptionUtil.getValue(Wrapper.mc().options.getFov()) : 70f;
+        current = 70f;
     }
 
     @Override
     public void onDisable() {
         current = 0;
-        if (Wrapper.nullCheck()) OptionUtil.setValue(Wrapper.mc().options.getFov(), 70);
     }
 
     @Override

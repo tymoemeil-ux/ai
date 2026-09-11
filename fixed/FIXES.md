@@ -136,3 +136,21 @@ Przyczyna „żadna komenda ani GUI nie działa” była w runtime, nie w kompil
 
 Uwaga: event bus od rundy 4 łapie wyjątki wewnątrz listenerów, więc po tych zmianach
 żaden błąd w module nie powinien już wywalać gry — w najgorszym razie zobaczysz błąd w logu.
+
+## Naprawione — runda 7 (spam "Illegal option value ... options.fov" = crash przy ładowaniu terenu)
+
+**Przyczyna:** `Zoom` (FOV 5-70) i `CustomFOV` (do 180) zapisywały FOV bezpośrednio do opcji
+Minecrafta (`options.getFov().setValue(...)`), a vanilla przyjmuje tylko **30-110**. Przy Zoomie
+każda klatka animacji poniżej 30 logowała błąd - w kilka sekund powstawały setki tysięcy linii,
+co zawieszało i wywalało grę na ekranie ładowania terenu.
+
+**Rozwiązanie (tak jak w prawdziwych klientach):**
+39. Nowy `GameRendererMixin` (`getFov`, RETURN, cancellable) podmienia FOV w locie
+    przez `FovModifier` - mod nie dotyka już opcji Minecrafta, więc Zoom może zejść do 5,
+    a Custom FOV wejść na 180, bez ani jednego nielegalnego zapisu.
+40. `Zoom` i `CustomFOV` przepisane: nie zapisują do `options.getFov()` (koniec spamu,
+    koniec rozjeżdżania ustawień FOV w opcjach gry po wyłączeniu modułu).
+41. `OptionUtil.setValue` pomija zapis, gdy wartość się nie zmieniła; `Fullbright`
+    (gamma) ustawia jasność tylko przy zmianie.
+
+Po tej zmianie log nie powinien zawierać już ani jednej linii `Illegal option value`.
